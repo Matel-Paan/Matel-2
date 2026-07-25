@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta name="google-site-verification" content="MBsgxEg1dAmw6SyAFLDqsXCFA4VucGwpSP5odlt3xuM" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
@@ -57,8 +56,8 @@
           "@type": "SoftwareApplication",
           "name": "Matel Paan Udhar App",
           "applicationCategory": "BusinessApplication",
-          "operatingSystem": "Web, Android, iOS",
-          "description": "A digital khata and udhar management progressive web app for Matel Paan customers.",
+          "operatingSystem": "Web, Android",
+          "description": "A digital khata and udhar management progressive web app and APK for Matel Paan customers.",
           "offers": {
             "@type": "Offer",
             "price": "0",
@@ -195,11 +194,11 @@
                 <p class="hero-text">Welcome to the official digital ledger of Matel Paan, Surat. Securely check your outstanding balance, track history, and make verified payments seamlessly.</p>
                 
                 <div class="hero-actions">
-                    <!-- Option 1: Download App (PWA capability) -->
-                    <button id="install-btn" class="btn btn-primary" aria-label="Download Matel Paan App">
+                    <!-- Option 1: Direct APK Download -->
+                    <a href="matel-user.apk" download="matel-user.apk" id="install-btn" class="btn btn-primary" aria-label="Download Matel Paan APK">
                         <svg viewBox="0 0 24 24" aria-hidden="true" style="width:24px; fill:#fff;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                         Download App
-                    </button>
+                    </a>
                     <!-- Option 2: Open In Browser -->
                     <a href="user.html" class="btn btn-outline" aria-label="Open Web App in Browser">
                         <svg viewBox="0 0 24 24" aria-hidden="true" style="width:24px; fill:currentColor;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
@@ -277,7 +276,7 @@
     <!-- Smart Toast Notification -->
     <div id="toast" class="toast" role="alert" aria-live="assertive">Message</div>
 
-    <!-- Scripts (Animation + PWA Download Prompt Simulation) -->
+    <!-- Scripts (Animation + Direct APK Download Simulation) -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             // Scroll Animation
@@ -293,8 +292,7 @@
             window.addEventListener("scroll", revealOnScroll);
             revealOnScroll(); // Trigger on load
 
-            // App Download (PWA) Logic
-            let deferredPrompt;
+            // Direct APK Download UI Feedback
             const installBtn = document.getElementById('install-btn');
             const toast = document.getElementById('toast');
 
@@ -304,27 +302,10 @@
                 setTimeout(() => toast.classList.remove('show'), 4000);
             };
 
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-            });
-
-            installBtn.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        console.log('App Installed Successfully');
-                    }
-                    deferredPrompt = null;
-                } else {
-                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                    if(isIOS) {
-                        showToast("Tap the 'Share' icon below, then select 'Add to Home Screen' to install Matel Paan app.");
-                    } else {
-                        showToast("App is ready! Tap 'Install' or 'Add to Home Screen' in your browser menu.");
-                    }
-                }
+            installBtn.addEventListener('click', () => {
+                // The browser will automatically handle the file download because of the href and download attributes.
+                // We just show a premium toast notification here to inform the user.
+                showToast("Downloading Matel Paan App... Please wait.");
             });
         });
     </script>
