@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Khata - Smart Business Admin</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- HTML2PDF & SheetJS for Reports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: { 
+                extend: { 
+                    colors: { primary: '#6366f1', primaryDark: '#4f46e5', surface: '#f8fafc' },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    boxShadow: { 'soft': '0 10px 40px -10px rgba(0,0,0,0.08)' }
+                } 
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .loader { border: 3px solid #e2e8f0; border-top: 3px solid #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none !important; }
+        .sidebar-active { background-color: #eef2ff; color: #4f46e5; font-weight: 600; border-right: 4px solid #4f46e5; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex h-screen overflow-hidden selection:bg-primary selection:text-white relative">
+
+    <!-- ========================================== -->
+    <!-- CONFIGURATION SECTION                      -->
+    <!-- ========================================== -->
+    <script>
+        // FIXED: Secret Key hata kar wapas ANON Key laga di hai, ab koi browser error nahi aayega.
+        const CONFIG = {
+            SUPABASE_URL: "https://elshnwqzqvfdzgfmhhmp.supabase.co",
+            SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsc2hud3F6cXZmZHpnZm1oaG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0ODAwMTQsImV4cCI6MjEwODA1NjAxNH0.rbCqvx-8OU2HFcXidDhoIiFPE0GfDkFu737AlGWUVGk"
+        };
+        const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        let adminBusinessId = null;
+        
+        // ADMIN LOGIN CREDENTIALS
+        const ADMIN_EMAIL = "admin.matel@gmail.com";
+        const ADMIN_PASS = "08960896";
+
+        // FIREBASE PUSH CONFIGURATION
+        // Firebase Cloud Messaging (Legacy) API Server Key. Iske bina Firebase push fire nahi karega.
+        // Ise aap Firebase Console -> Project Settings -> Cloud Messaging se nikal kar daal sakte hain.
+        const FIREBASE_SERVER_KEY = "YOUR_FIREBASE_SERVER_KEY_HERE"; 
+    </script>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-3"></div>
+
+    <!-- AUTHENTICATION VIEW -->
+    <div id="auth-view" class="w-full min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 to-slate-100 absolute z-50">
+        <div class="bg-white p-8 rounded-[2rem] shadow-soft w-full max-w-md fade-in border border-white">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Business Admin</h1>
+                <p class="text-sm text-slate-500 mt-1">HQ Command Center</p>
+            </div>
+            
+            <form id="auth-form" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Admin ID</label>
+                    <input type="email" id="auth-email" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Secret PIN</label>
+                    <input type="password" id="auth-password" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition outline-none">
+                </div>
+                <button type="submit" id="auth-btn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex justify-center items-center gap-2 mt-2">
+                    <span>Access Dashboard</span> <i class="fa-solid fa-lock-open text-sm ml-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP VIEW -->
+    <aside class="w-72 bg-white shadow-[10px_0_40px_-10px_rgba(0,0,0,0.05)] flex-col hidden md:flex z-40 h-full relative" id="main-sidebar">
+        <button onclick="toggleMobileMenu()" class="md:hidden absolute top-4 right-4 text-slate-400 text-xl"><i class="fa-solid fa-times"></i></button>
+        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl flex items-center justify-center shadow-md"><i class="fa-solid fa-building"></i></div>
+            <div>
+                <h2 class="font-bold text-slate-900 text-lg leading-tight tracking-tight">Digital Khata</h2>
+                <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider truncate w-40" id="business-name-display">Loading...</p>
+            </div>
+        </div>
+        <nav class="flex-1 py-4 overflow-y-auto" id="nav-menu">
+            <p class="px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Main Menu</p>
+            <button onclick="nav('dashboard', this)" class="w-full flex items-center gap-3 py-3.5 px-6 text-left text-slate-500 hover:bg-slate-50 sidebar-active transition font-medium"><i class="fa-solid fa-chart-pie w-5 text-lg"></i> Overview</button>
+            <button onclick="nav('customers', this)" class="w-full flex items-center gap-3 py-3.5 px-6 text-left text-slate-500 hover:bg-slate-50 transition font-medium"><i class="fa-solid fa-users w-5 text-lg"></i> Customers</button>
+            <button onclick="nav('entry', this)" class="w-full flex items-center gap-3 py-3.5 px-6 text-left text-slate-500 hover:bg-slate-50 transition font-medium"><i class="fa-solid fa-plus-circle w-5 text-lg"></i> Add Ledger Entry</button>
+            <button onclick="nav('requests', this)" class="w-full flex items-center justify-between py-3.5 px-6 text-left text-slate-500 hover:bg-slate-50 transition font-medium">
+                <div class="flex items-center gap-3"><i class="fa-solid fa-check-to-slot w-5 text-lg"></i> Approvals</div>
+                <span id="badge-requests" class="hidden bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+            </button>
+            
+            <p class="px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 mt-6">Advanced Tools</p>
+            <button onclick="nav('reports', this)" class="w-full flex items-center gap-3 py-3.5 px-6 text-left text-slate-500 hover:bg-slate-50 transition font-medium"><i class="fa-solid fa-file-invoice w-5 text-lg"></i> Reports & Export</button>
+            <!-- RENAMED: Broadcast Center se "Push Notifications" kar diya gaya hai -->
+            <button onclick="nav('notify', this)" class="w-full flex items-center gap-3 py-3.5 px-6 text-left text-slate-500 hover:bg-slate-50 transition font-medium"><i class="fa-solid fa-bullhorn w-5 text-lg"></i> Push Notifications</button>
+        </nav>
+        <div class="p-6 border-t border-slate-100">
+            <button onclick="logout()" class="w-full bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-600 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 border border-slate-200 hover:border-rose-200">
+                <i class="fa-solid fa-power-off"></i> Lock Panel
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <header class="bg-white/80 backdrop-blur-md border-b border-slate-100 p-4 flex justify-between items-center md:hidden z-30 sticky top-0">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-indigo-500 text-white rounded-lg flex items-center justify-center"><i class="fa-solid fa-building text-xs"></i></div>
+                <h2 class="text-sm font-bold text-slate-900">Admin HQ</h2>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-slate-600 p-2"><i class="fa-solid fa-bars text-lg"></i></button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+            <!-- 1. DASHBOARD -->
+            <section id="sec-dashboard" class="space-y-6 fade-in">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Business Pulse</h2>
+                        <p class="text-sm text-slate-500 mt-1">Live financial summary & stats</p>
+                    </div>
+                    <button onclick="loadDashboard()" class="bg-white border border-slate-200 p-2.5 rounded-xl text-slate-500 hover:text-primary hover:border-primary/30 shadow-sm transition"><i class="fa-solid fa-rotate-right"></i></button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Today's Collection</p>
+                        <h3 class="text-3xl font-bold text-slate-800 mt-1 tracking-tight">₹<span id="dash-today">0</span></h3>
+                    </div>
+                    <div class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-700 relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-rose-500/20 rounded-full blur-2xl"></div>
+                        <div class="w-10 h-10 bg-white/10 text-rose-400 rounded-xl flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-wallet"></i></div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Market Outstanding</p>
+                        <h3 class="text-3xl font-bold text-white mt-1 tracking-tight">₹<span id="dash-outstanding">0</span></h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="w-10 h-10 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-calendar-check"></i></div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">This Month (Jama)</p>
+                        <h3 class="text-3xl font-bold text-slate-800 mt-1 tracking-tight">₹<span id="dash-month">0</span></h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-users"></i></div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Customers</p>
+                        <h3 class="text-3xl font-bold text-slate-800 mt-1 tracking-tight" id="dash-customers">0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mt-8">
+                    <h3 class="font-bold text-slate-900 text-lg mb-6 flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-400"></i> Live Transactions</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-xs text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                                    <th class="pb-3 font-semibold">Date & Time</th>
+                                    <th class="pb-3 font-semibold">Customer</th>
+                                    <th class="pb-3 font-semibold">Type</th>
+                                    <th class="pb-3 font-semibold text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-ledger" class="divide-y divide-slate-50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. CUSTOMERS -->
+            <section id="sec-customers" class="hidden space-y-6 fade-in">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                    <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Customer Directory</h2>
+                    <button onclick="toggleCustomerModal(true)" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-xl font-semibold shadow-lg transition flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Add Customer</button>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex gap-4">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="search-customer" placeholder="Search by name, phone or address..." class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm transition" onkeyup="filterCustomers()">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-white text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100">
+                                <tr>
+                                    <th class="p-4 font-semibold">Customer Info</th>
+                                    <th class="p-4 font-semibold text-right">Outstanding (₹)</th>
+                                    <th class="p-4 font-semibold text-center">Status</th>
+                                    <th class="p-4 font-semibold text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-list" class="divide-y divide-slate-50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. LEDGER ENTRY -->
+            <section id="sec-entry" class="hidden space-y-6 fade-in max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-8">New Ledger Entry</h2>
+                <div class="bg-white p-6 rounded-[2rem] shadow-soft border border-slate-100">
+                    <div class="flex rounded-xl overflow-hidden border border-slate-200 mb-6 bg-slate-50 p-1 gap-1">
+                        <button type="button" id="tab-udhar" onclick="setEntryType('UDHAR')" class="flex-1 py-3 text-center font-bold bg-white text-rose-600 rounded-lg shadow-sm transition">Given (Udhar)</button>
+                        <button type="button" id="tab-jama" onclick="setEntryType('JAMA')" class="flex-1 py-3 text-center font-bold text-slate-500 hover:text-emerald-600 rounded-lg transition">Received (Jama)</button>
+                    </div>
+                    <form id="ledger-form" class="space-y-4">
+                        <input type="hidden" id="entry-type" value="UDHAR">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Select Customer</label>
+                            <select id="entry-customer" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Amount (₹)</label>
+                            <input type="number" id="entry-amount" required min="1" step="0.01" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xl font-bold text-slate-800 outline-none focus:ring-2 focus:ring-primary/20">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Description</label>
+                            <input type="text" id="entry-desc" required placeholder="e.g., Grocery materials" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary/20">
+                        </div>
+                        <div id="payment-method-container" class="hidden">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Payment Method</label>
+                            <select id="entry-method" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary/20">
+                                <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Bank Transfer">Bank Transfer</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="entry-btn" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-xl shadow-lg transition mt-4">Save Udhar Entry</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 4. APPROVALS -->
+            <section id="sec-requests" class="hidden space-y-6 fade-in">
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Pending Claims</h2>
+                <p class="text-sm text-slate-500 mb-8">Verify offline payments submitted by customers</p>
+                <div class="grid grid-cols-1 gap-4" id="requests-list"></div>
+            </section>
+
+            <!-- 5. REPORTS -->
+            <section id="sec-reports" class="hidden space-y-6 fade-in">
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-8">Reports & Export</h2>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Start Date</label>
+                            <input type="date" id="rep-start" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">End Date</label>
+                            <input type="date" id="rep-end" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="generateReport()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow transition">Generate Data</button>
+                        </div>
+                    </div>
+                    <div id="report-preview-container" class="hidden">
+                        <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
+                            <p class="font-bold text-slate-700 text-sm" id="rep-summary">Found 0 records.</p>
+                            <div class="flex gap-2">
+                                <button onclick="exportToCSV()" class="bg-white border border-slate-200 text-slate-600 hover:text-emerald-600 px-4 py-2 rounded-lg text-sm font-semibold shadow-sm flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-500"></i> CSV</button>
+                                <button onclick="exportToPDF()" class="bg-white border border-slate-200 text-slate-600 hover:text-rose-600 px-4 py-2 rounded-lg text-sm font-semibold shadow-sm flex items-center gap-2"><i class="fa-solid fa-file-pdf text-rose-500"></i> PDF</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto border border-slate-100 rounded-xl max-h-96" id="pdf-content-area">
+                            <div class="p-4 bg-white hidden" id="pdf-header">
+                                <h2 class="text-xl font-bold" id="pdf-shop-name">Shop Name</h2>
+                                <p class="text-sm text-gray-500" id="pdf-date-range">Report Date</p>
+                            </div>
+                            <table class="w-full text-left text-sm" id="report-table">
+                                <thead class="bg-slate-50 text-slate-600 sticky top-0">
+                                    <tr>
+                                        <th class="p-3">Date</th><th class="p-3">Customer</th><th class="p-3">Type</th><th class="p-3">Method</th><th class="p-3 text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-tbody" class="divide-y divide-slate-100 bg-white"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. PUSH NOTIFICATIONS -->
+            <section id="sec-notify" class="hidden space-y-6 fade-in max-w-3xl mx-auto">
+                <div class="text-center mb-8 mt-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-sky-400 to-indigo-500 text-white rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-sky-500/30"><i class="fa-solid fa-bullhorn"></i></div>
+                    <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Push Notifications</h2>
+                    <p class="text-sm text-slate-500 mt-2">Send instant Push Notifications to your customers' phones.</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-[2rem] shadow-soft border border-slate-100">
+                    <form id="notify-form" class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Target Audience</label>
+                            <select id="notif-target" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none">
+                                <option value="ALL">All Customers</option>
+                                <option value="DUES_500">Customers with Dues > ₹500</option>
+                                <option value="DUES_1000">Customers with Dues > ₹1000</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Message Title</label>
+                            <input type="text" id="notif-title" required placeholder="E.g., Payment Reminder or Festive Offer" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Message Detail</label>
+                            <textarea id="notif-message" required rows="3" placeholder="Type your message here..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none resize-none"></textarea>
+                        </div>
+                        <button type="submit" id="notif-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 mt-4">
+                            <i class="fa-regular fa-paper-plane"></i> Send Push Notification
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal: Add/Edit Customer -->
+    <div id="modal-customer" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden fade-in">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-lg text-slate-900" id="modal-cust-title">Add New Customer</h3>
+                <button onclick="toggleCustomerModal(false)" class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-slate-400 hover:text-slate-800 shadow-sm border border-slate-200"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="add-customer-form" class="p-6 space-y-4">
+                <input type="hidden" id="cust-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Full Name</label>
+                    <input type="text" id="cust-name" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Phone Number</label>
+                    <input type="tel" id="cust-phone" required pattern="[0-9]{10}" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Address (Optional)</label>
+                    <input type="text" id="cust-address" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary outline-none">
+                </div>
+                <div id="open-bal-div">
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Opening Outstanding (₹)</label>
+                    <input type="number" id="cust-open" value="0" min="0" step="0.01" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary outline-none font-bold">
+                </div>
+                <button type="submit" id="cust-btn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition mt-4">Save Customer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APPLICATION LOGIC -->
+    <script>
+        let allCustomers = [];
+        let reportData = [];
+
+        // UI UTILITY
+        function showToast(msg, type='success') {
+            const toast = document.createElement('div');
+            const icon = type === 'success' ? 'fa-check-circle text-emerald-500' : 'fa-circle-exclamation text-rose-500';
+            const bg = type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800';
+            toast.className = `p-4 rounded-xl shadow-lg border ${bg} font-medium text-sm flex items-center gap-3 fade-in z-[9999]`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i> <span>${msg}</span>`;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => { toast.classList.add('opacity-0', 'translate-x-full', 'duration-300'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        // PUSH NOTIFICATION SENDER (Firebase API Trigger)
+        async function sendFirebasePush(fcmToken, title, body) {
+            if(!fcmToken) return;
+            try {
+                if (FIREBASE_SERVER_KEY === "YOUR_FIREBASE_SERVER_KEY_HERE") {
+                    console.log("Push Notification triggered for Token:", fcmToken);
+                    console.log("NOTE: Add FIREBASE_SERVER_KEY in code to enable real push.");
+                    return;
+                }
+                await fetch('https://fcm.googleapis.com/fcm/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'key=' + FIREBASE_SERVER_KEY
+                    },
+                    body: JSON.stringify({
+                        to: fcmToken,
+                        notification: { title: title, body: body, icon: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }
+                    })
+                });
+            } catch (err) { console.error("Firebase Push Error:", err); }
+        }
+
+        // AUTH
+        document.getElementById('auth-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-password').value;
+            const btn = document.getElementById('auth-btn');
+            btn.innerHTML = '<div class="loader mx-auto border-slate-400 border-t-white w-5 h-5"></div>';
+            
+            setTimeout(() => {
+                if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    document.getElementById('auth-view').classList.add('hidden');
+                    initAdminDashboard();
+                } else { showToast("Access Denied. Incorrect ID or PIN.", 'error'); }
+                btn.innerHTML = '<span>Access Dashboard</span> <i class="fa-solid fa-lock-open text-sm ml-1"></i>';
+            }, 800);
+        });
+
+        function logout() { localStorage.removeItem('adminLoggedIn'); window.location.reload(); }
+
+        window.onload = () => {
+            if(localStorage.getItem('adminLoggedIn') === 'true') {
+                document.getElementById('auth-view').classList.add('hidden');
+                initAdminDashboard();
+            }
+        };
+
+        // SETUP & DASHBOARD
+        async function initAdminDashboard() {
+            try {
+                const { data: business, error } = await supabaseClient.from('businesses').select('*').limit(1).single();
+                if (error || !business) { showToast("Database connection failed.", 'error'); return; }
+                adminBusinessId = business.id;
+                document.getElementById('business-name-display').innerText = business.business_name;
+                document.getElementById('pdf-shop-name').innerText = business.business_name;
+                loadDashboard(); loadCustomers(); checkPendingRequestsCount();
+            } catch (err) { showToast("System Error: " + err.message, 'error'); }
+        }
+
+        function toggleMobileMenu() {
+            const sb = document.getElementById('main-sidebar');
+            sb.classList.toggle('hidden'); sb.classList.toggle('absolute'); sb.classList.toggle('inset-y-0'); sb.classList.toggle('left-0');
+        }
+
+        function nav(section, btn) {
+            document.querySelectorAll('main > div > section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`sec-${section}`).classList.remove('hidden');
+            document.querySelectorAll('#nav-menu button').forEach(el => { el.classList.remove('sidebar-active', 'bg-eef2ff'); el.classList.add('text-slate-500'); });
+            if(btn) { btn.classList.add('sidebar-active'); btn.classList.remove('text-slate-500'); }
+            if (window.innerWidth < 768 && !document.getElementById('main-sidebar').classList.contains('hidden')) toggleMobileMenu();
+            if(section === 'dashboard') loadDashboard();
+            if(section === 'customers') loadCustomers();
+            if(section === 'entry') populateCustomerDropdowns();
+            if(section === 'requests') loadPaymentRequests();
+        }
+
+        async function loadDashboard() {
+            if(!adminBusinessId) return;
+            const now = new Date();
+            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+            const [custRes, ledgRes, reqRes] = await Promise.all([
+                supabaseClient.from('customers').select('outstanding_balance, status').eq('business_id', adminBusinessId),
+                supabaseClient.from('ledger_transactions').select('*, customers(full_name)').eq('business_id', adminBusinessId).order('created_at', {ascending: false}),
+                supabaseClient.from('payment_requests').select('*', {count: 'exact', head: true}).eq('business_id', adminBusinessId).eq('status', 'pending')
+            ]);
+
+            if(custRes.error) return showToast("Failed to load dashboard stats", "error");
+
+            let totalOut = 0, activeCusts = 0, todayJama = 0, monthJama = 0;
+            const recent = [];
+            
+            custRes.data.forEach(c => { if(c.status !== 'inactive') { totalOut += Number(c.outstanding_balance); activeCusts++; } });
+            ledgRes.data.forEach(t => {
+                if(recent.length < 6) recent.push(t);
+                if(t.transaction_type === 'JAMA') {
+                    if(t.created_at >= startOfMonth) monthJama += Number(t.amount);
+                    if(t.created_at >= startOfDay) todayJama += Number(t.amount);
+                }
+            });
+
+            document.getElementById('dash-customers').innerText = activeCusts;
+            document.getElementById('dash-outstanding').innerText = totalOut.toLocaleString('en-IN');
+            document.getElementById('dash-today').innerText = todayJama.toLocaleString('en-IN');
+            document.getElementById('dash-month').innerText = monthJama.toLocaleString('en-IN');
+            
+            const badge = document.getElementById('badge-requests');
+            if(reqRes.count > 0) { badge.innerText = reqRes.count; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
+
+            document.getElementById('recent-ledger').innerHTML = recent.length ? recent.map(t => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-3 text-xs text-slate-500">${new Date(t.created_at).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</td>
+                    <td class="py-3 font-semibold text-slate-800">${t.customers?.full_name || 'Unknown'}</td>
+                    <td class="py-3"><span class="px-2.5 py-1 rounded-md text-[10px] font-bold ${t.transaction_type==='JAMA' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${t.transaction_type}</span></td>
+                    <td class="py-3 font-bold text-right ${t.transaction_type==='JAMA' ? 'text-emerald-600' : 'text-rose-600'}">${t.transaction_type==='JAMA'?'-':'+'}₹${Number(t.amount).toLocaleString('en-IN')}</td>
+                </tr>`).join('') : '<tr><td colspan="4" class="p-4 text-center text-slate-400 text-sm">No transactions yet</td></tr>';
+        }
+
+        async function checkPendingRequestsCount() {
+            if(!adminBusinessId) return;
+            const { count } = await supabaseClient.from('payment_requests').select('*', {count: 'exact', head: true}).eq('business_id', adminBusinessId).eq('status', 'pending');
+            const b = document.getElementById('badge-requests');
+            if(count > 0) { b.innerText = count; b.classList.remove('hidden'); } else b.classList.add('hidden');
+        }
+
+        // CUSTOMERS
+        async function loadCustomers() {
+            const { data, error } = await supabaseClient.from('customers').select('*').eq('business_id', adminBusinessId).order('full_name');
+            if(error) return showToast(error.message, 'error');
+            allCustomers = data; renderCustomersTable(allCustomers);
+        }
+
+        function renderCustomersTable(data) {
+            document.getElementById('customers-list').innerHTML = data.map(c => `
+                <tr class="hover:bg-slate-50 border-b border-slate-50">
+                    <td class="p-4">
+                        <p class="font-bold text-slate-800">${c.full_name}</p>
+                        <p class="text-[11px] text-slate-500 font-medium"><i class="fa-solid fa-phone mr-1"></i> ${c.phone}</p>
+                    </td>
+                    <td class="p-4 text-right font-bold text-lg ${c.outstanding_balance > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${Number(c.outstanding_balance).toLocaleString('en-IN')}</td>
+                    <td class="p-4 text-center"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${c.status === 'inactive' ? 'bg-slate-200 text-slate-500' : 'bg-sky-100 text-sky-700'}">${c.status || 'Active'}</span></td>
+                    <td class="p-4 text-center space-x-2">
+                        <button onclick="editCustomer('${c.id}')" class="w-8 h-8 bg-white border border-slate-200 text-slate-500 hover:text-primary rounded-lg shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="toggleCustomerStatus('${c.id}', '${c.status}')" class="w-8 h-8 bg-white border border-slate-200 ${c.status === 'inactive' ? 'text-emerald-500' : 'text-rose-500'} rounded-lg shadow-sm"><i class="fa-solid ${c.status === 'inactive' ? 'fa-check' : 'fa-ban'} text-xs"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterCustomers() {
+            const term = document.getElementById('search-customer').value.toLowerCase();
+            renderCustomersTable(allCustomers.filter(c => c.full_name.toLowerCase().includes(term) || c.phone.includes(term)));
+        }
+
+        function toggleCustomerModal(show, isEdit = false) {
+            const m = document.getElementById('modal-customer');
+            if(show) { m.classList.remove('hidden'); document.getElementById('modal-cust-title').innerText = isEdit ? "Edit Info" : "New Customer"; document.getElementById('open-bal-div').style.display = isEdit ? 'none' : 'block'; }
+            else { m.classList.add('hidden'); document.getElementById('add-customer-form').reset(); document.getElementById('cust-id').value = ''; }
+        }
+
+        function editCustomer(id) {
+            const c = allCustomers.find(x => x.id === id); if(!c) return;
+            document.getElementById('cust-id').value = c.id; document.getElementById('cust-name').value = c.full_name; document.getElementById('cust-phone').value = c.phone; document.getElementById('cust-address').value = c.address || '';
+            toggleCustomerModal(true, true);
+        }
+
+        async function toggleCustomerStatus(id, stat) {
+            const nStat = stat === 'inactive' ? 'active' : 'inactive';
+            const { error } = await supabaseClient.from('customers').update({status: nStat}).eq('id', id);
+            if(!error) { showToast(`Customer ${nStat}d.`); loadCustomers(); }
+        }
+
+        document.getElementById('add-customer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('cust-id').value; const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value; const addr = document.getElementById('cust-address').value;
+            const openBal = parseFloat(document.getElementById('cust-open').value);
+            const btn = document.getElementById('cust-btn'); btn.disabled = true; btn.innerText = "Saving...";
+
+            try {
+                if(id) {
+                    await supabaseClient.from('customers').update({full_name: name, phone: phone, address: addr}).eq('id', id);
+                    showToast("Customer updated!");
+                } else {
+                    const { data: newCust, error } = await supabaseClient.from('customers').insert([{business_id: adminBusinessId, full_name: name, phone: phone, address: addr}]).select().single();
+                    if(error) throw error;
+                    if(openBal > 0) await supabaseClient.from('ledger_transactions').insert([{business_id: adminBusinessId, customer_id: newCust.id, transaction_type: 'OPENING', amount: openBal, description: 'Opening Balance'}]);
+                    showToast("New customer added!");
+                }
+                toggleCustomerModal(false); loadCustomers(); loadDashboard();
+            } catch (err) { showToast(err.message, 'error'); } finally { btn.disabled = false; btn.innerText = "Save Customer"; }
+        });
+
+        // ENTRIES & PUSH TRIGGERS
+        function populateCustomerDropdowns() {
+            document.getElementById('entry-customer').innerHTML = `<option value="" disabled selected>-- Select Customer --</option>` + allCustomers.filter(c => c.status !== 'inactive').map(c => `<option value="${c.id}">${c.full_name} (${c.phone}) - Due: ₹${Number(c.outstanding_balance).toLocaleString()}</option>`).join('');
+        }
+
+        function setEntryType(type) {
+            document.getElementById('entry-type').value = type;
+            const btnU = document.getElementById('tab-udhar'); const btnJ = document.getElementById('tab-jama');
+            const submit = document.getElementById('entry-btn'); const methodDiv = document.getElementById('payment-method-container');
+            if(type === 'UDHAR') {
+                btnU.className = "flex-1 py-3 text-center font-bold bg-white text-rose-600 rounded-lg shadow-sm transition";
+                btnJ.className = "flex-1 py-3 text-center font-bold text-slate-500 hover:text-emerald-600 rounded-lg transition";
+                submit.className = "w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-xl shadow-lg transition mt-4";
+                submit.innerText = "Save Udhar Entry"; methodDiv.classList.add('hidden');
+            } else {
+                btnJ.className = "flex-1 py-3 text-center font-bold bg-white text-emerald-600 rounded-lg shadow-sm transition";
+                btnU.className = "flex-1 py-3 text-center font-bold text-slate-500 hover:text-rose-600 rounded-lg transition";
+                submit.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg transition mt-4";
+                submit.innerText = "Save Jama Entry"; methodDiv.classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('ledger-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const type = document.getElementById('entry-type').value; const cid = document.getElementById('entry-customer').value;
+            const amt = parseFloat(document.getElementById('entry-amount').value); const desc = document.getElementById('entry-desc').value;
+            const method = type === 'JAMA' ? document.getElementById('entry-method').value : null;
+            const btn = document.getElementById('entry-btn');
+            if(!cid) return showToast("Select customer", "error");
+            btn.disabled = true; btn.innerText = "Processing...";
+
+            try {
+                // 1. Insert Transaction
+                const { error } = await supabaseClient.from('ledger_transactions').insert([{business_id: adminBusinessId, customer_id: cid, transaction_type: type, amount: amt, description: desc, payment_method: method}]);
+                if(error) throw error;
+                
+                // 2. Insert In-App DB Notification
+                const msgTitle = type === 'UDHAR' ? 'New Credit Added' : 'Payment Received';
+                const msgBody = type === 'UDHAR' ? `New Udhar of ₹${amt} added for ${desc}.` : `Payment of ₹${amt} received via ${method}. Thank you!`;
+                await supabaseClient.from('notifications').insert([{ business_id: adminBusinessId, customer_id: cid, title: msgTitle, message: msgBody, notification_type: type.toLowerCase() }]);
+
+                // 3. Send Firebase Push Notification
+                const customer = allCustomers.find(c => c.id === cid);
+                if(customer && customer.fcm_token) {
+                    await sendFirebasePush(customer.fcm_token, msgTitle, msgBody);
+                }
+
+                showToast(`Entry saved and notification fired!`);
+                e.target.reset(); loadCustomers(); loadDashboard(); populateCustomerDropdowns();
+            } catch (err) { showToast(err.message, 'error'); } finally { btn.disabled = false; btn.innerText = type === 'UDHAR' ? "Save Udhar" : "Save Jama"; }
+        });
+
+        // APPROVALS
+        async function loadPaymentRequests() {
+            const { data, error } = await supabaseClient.from('payment_requests').select('*, customers(full_name, phone)').eq('business_id', adminBusinessId).eq('status', 'pending').order('created_at', { ascending: false });
+            const container = document.getElementById('requests-list');
+            if(error) return container.innerHTML = `<p class="text-rose-500">${error.message}</p>`;
+            if(data.length === 0) return container.innerHTML = `<div class="bg-white p-10 rounded-2xl text-center border shadow-sm"><i class="fa-solid fa-check-circle text-4xl text-emerald-400 mb-3"></i><p class="text-slate-500">No pending claims.</p></div>`;
+
+            container.innerHTML = data.map(req => `
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-200 flex justify-between items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2"><span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase flex items-center gap-1"><i class="fa-solid fa-hourglass-half"></i> Pending</span><span class="text-xs font-medium text-slate-400">${new Date(req.created_at).toLocaleString('en-IN', {day:'2-digit', month:'short'})}</span></div>
+                        <h4 class="text-lg font-bold text-slate-900">${req.customers.full_name} <span class="text-sm font-normal">(${req.customers.phone})</span></h4>
+                        <p class="text-sm text-slate-600 mt-1">Claims paid <span class="font-bold text-emerald-600 text-lg">₹${Number(req.amount).toLocaleString('en-IN')}</span> via ${req.payment_method}</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="approveRequest('${req.id}')" class="bg-emerald-500 text-white px-5 py-2 rounded-xl font-bold text-sm shadow-md"><i class="fa-solid fa-check"></i> Approve</button>
+                        <button onclick="rejectRequest('${req.id}')" class="bg-rose-50 text-rose-600 border border-rose-200 px-5 py-2 rounded-xl font-bold text-sm"><i class="fa-solid fa-times"></i> Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function approveRequest(reqId) {
+            try {
+                const { data: req } = await supabaseClient.from('payment_requests').select('*').eq('id', reqId).single();
+                await supabaseClient.from('payment_requests').update({ status: 'approved' }).eq('id', reqId);
+                await supabaseClient.from('ledger_transactions').insert([{business_id: req.business_id, customer_id: req.customer_id, transaction_type: 'JAMA', amount: req.amount, description: 'Claim Approved', payment_method: req.payment_method}]);
+                
+                // Notifications DB & Push
+                const title = 'Payment Claim Approved'; const body = `Your claim of ₹${req.amount} has been approved.`;
+                await supabaseClient.from('notifications').insert([{ business_id: adminBusinessId, customer_id: req.customer_id, title, message: body, notification_type: 'jama' }]);
+                const customer = allCustomers.find(c => c.id === req.customer_id);
+                if(customer && customer.fcm_token) await sendFirebasePush(customer.fcm_token, title, body);
+
+                showToast("Claim approved!"); loadPaymentRequests(); loadDashboard(); checkPendingRequestsCount();
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        async function rejectRequest(reqId) {
+            await supabaseClient.from('payment_requests').update({ status: 'rejected' }).eq('id', reqId);
+            showToast("Claim rejected."); loadPaymentRequests(); checkPendingRequestsCount();
+        }
+
+        // REPORTS
+        async function generateReport() {
+            const s = document.getElementById('rep-start').value; const e = document.getElementById('rep-end').value;
+            if(!s || !e) return showToast("Select both dates", "error");
+            const { data, error } = await supabaseClient.from('ledger_transactions').select('*, customers(full_name, phone)').eq('business_id', adminBusinessId).gte('created_at', s + 'T00:00:00Z').lte('created_at', e + 'T23:59:59Z').order('created_at', {ascending: false});
+            if(error) return showToast(error.message, 'error');
+            reportData = data;
+            document.getElementById('report-preview-container').classList.remove('hidden');
+            document.getElementById('rep-summary').innerText = `Found ${data.length} transactions.`;
+            document.getElementById('pdf-date-range').innerText = `${s} to ${e}`;
+            document.getElementById('report-tbody').innerHTML = data.map(t => `<tr><td class="p-3 text-xs text-slate-500">${new Date(t.created_at).toLocaleDateString('en-IN')}</td><td class="p-3 font-semibold text-slate-800">${t.customers?.full_name || '-'}</td><td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.transaction_type==='JAMA'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${t.transaction_type}</span></td><td class="p-3 text-xs">${t.payment_method||'-'}</td><td class="p-3 font-bold text-right">₹${Number(t.amount).toLocaleString()}</td></tr>`).join('');
+        }
+
+        function exportToCSV() {
+            const ws = XLSX.utils.json_to_sheet(reportData.map(t => ({Date: new Date(t.created_at).toLocaleString('en-IN'), Customer: t.customers?.full_name, Type: t.transaction_type, Amount: t.amount, Method: t.payment_method||'-', Description: t.description})));
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Report"); XLSX.writeFile(wb, `Khata_${new Date().getTime()}.csv`);
+        }
+
+        function exportToPDF() {
+            document.getElementById('pdf-header').classList.remove('hidden');
+            html2pdf().set({ margin: 0.5, filename: `Khata_Report.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(document.getElementById('pdf-content-area')).save().then(() => document.getElementById('pdf-header').classList.add('hidden'));
+        }
+
+        // PUSH NOTIFICATIONS BROADCAST
+        document.getElementById('notify-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const target = document.getElementById('notif-target').value; const title = document.getElementById('notif-title').value; const message = document.getElementById('notif-message').value;
+            const btn = document.getElementById('notif-btn'); const ogText = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<div class="loader mx-auto border-t-white w-5 h-5"></div>';
+
+            try {
+                let toInsert = []; let pushTokens = [];
+                if (target === 'ALL') {
+                    toInsert.push({ business_id: adminBusinessId, customer_id: null, title, message, notification_type: 'info' });
+                    allCustomers.forEach(c => { if(c.status !== 'inactive' && c.fcm_token) pushTokens.push(c.fcm_token); });
+                } else {
+                    const t = target === 'DUES_500' ? 500 : 1000;
+                    const targets = allCustomers.filter(c => Number(c.outstanding_balance) >= t && c.status !== 'inactive');
+                    if(targets.length === 0) throw new Error(`No active customers found with dues > ₹${t}`);
+                    targets.forEach(c => {
+                        toInsert.push({ business_id: adminBusinessId, customer_id: c.id, title, message, notification_type: 'alert' });
+                        if(c.fcm_token) pushTokens.push(c.fcm_token);
+                    });
+                }
+
+                await supabaseClient.from('notifications').insert(toInsert); // Save to DB for In-App
+                // Fire Push to all collected Tokens
+                for (let token of pushTokens) { await sendFirebasePush(token, title, message); }
+                
+                showToast(`In-app notification sent! (Firebase Push requires Server Key)`, 'success'); e.target.reset();
+            } catch (err) { showToast(err.message, 'error'); } finally { btn.disabled = false; btn.innerHTML = ogText; }
+        });
+    </script>
+</body>
+</html>
