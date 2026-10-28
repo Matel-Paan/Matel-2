@@ -82,7 +82,7 @@
     <!-- AUTH VIEW -->
     <div id="auth-view" class="min-h-screen flex items-center justify-center p-4 bg-slate-50 absolute z-50 w-full">
         <div class="bg-white p-6 rounded-2xl shadow-soft w-full max-w-sm border border-slate-100 fade-in">
-            <div class="text-center mb-6">
+            <div class="text-center mb-5">
                 <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center text-xl shadow-sm mx-auto mb-3">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
@@ -90,26 +90,56 @@
                 <p class="text-xs text-slate-500 mt-1">Smart Customer Portal</p>
             </div>
             
+            <div id="auth-error" class="hidden text-rose-600 text-[11px] font-medium text-center bg-rose-50 p-2.5 rounded-lg border border-rose-100 mb-4 transition-all"></div>
+
             <form id="auth-form" class="space-y-4">
-                <div id="name-field" class="hidden space-y-3 fade-in">
+                
+                <div id="field-name" class="hidden space-y-3 fade-in">
                     <div>
                         <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Full Name</label>
-                        <input type="text" id="auth-name" placeholder="Rahul Kumar" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent transition outline-none">
+                        <div class="relative">
+                            <i class="fa-regular fa-user absolute left-3 top-3 text-slate-400 text-sm"></i>
+                            <input type="text" id="auth-name" placeholder="Rahul Kumar" class="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent transition outline-none">
+                        </div>
                     </div>
                     <div>
                         <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Mobile Number</label>
-                        <input type="tel" id="auth-phone" placeholder="9876543210" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent transition outline-none">
+                        <div class="relative">
+                            <i class="fa-solid fa-mobile-screen absolute left-3 top-3 text-slate-400 text-sm"></i>
+                            <input type="tel" id="auth-phone" placeholder="9876543210" class="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent transition outline-none">
+                        </div>
                     </div>
                 </div>
                 
-                <div id="email-group">
+                <div id="field-email" class="fade-in">
                     <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Email Address</label>
-                    <input type="email" id="auth-email" required placeholder="name@example.com" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent transition outline-none">
+                    <div class="relative">
+                        <i class="fa-regular fa-envelope absolute left-3 top-3 text-slate-400 text-sm"></i>
+                        <input type="email" id="auth-email" required placeholder="name@example.com" class="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent transition outline-none">
+                    </div>
                 </div>
 
-                <div id="otp-group" class="hidden fade-in space-y-3">
+                <div id="field-password" class="fade-in">
+                    <label id="lbl-password" class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-400 text-sm"></i>
+                        <input type="password" id="auth-password" placeholder="••••••••" class="w-full pl-9 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent transition outline-none">
+                        <button type="button" onclick="togglePassword('auth-password')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 focus:outline-none"><i class="fa-regular fa-eye"></i></button>
+                    </div>
+                </div>
+
+                <div id="field-confirm-password" class="hidden fade-in">
+                    <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Confirm Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-shield-check absolute left-3 top-3 text-slate-400 text-sm"></i>
+                        <input type="password" id="auth-confirm-password" placeholder="••••••••" class="w-full pl-9 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent transition outline-none">
+                        <button type="button" onclick="togglePassword('auth-confirm-password')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 focus:outline-none"><i class="fa-regular fa-eye"></i></button>
+                    </div>
+                </div>
+
+                <div id="field-otp" class="hidden fade-in space-y-3">
                     <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-lg">
-                        <p class="text-[10px] text-emerald-800 text-center font-medium">6-Digit OTP has been sent to your email.</p>
+                        <p class="text-[10px] text-emerald-800 text-center font-medium">A 6-digit OTP has been sent to your email.</p>
                     </div>
                     <div>
                         <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Enter OTP</label>
@@ -117,11 +147,16 @@
                     </div>
                 </div>
 
+                <div id="forgot-pass-link" class="text-right mt-1 mb-2 fade-in">
+                    <a href="#" onclick="setAuthMode('forgot_email'); return false;" class="text-[10px] text-accent hover:text-blue-700 font-semibold transition">Forgot Password?</a>
+                </div>
+
                 <button type="submit" id="auth-btn" class="w-full bg-primary hover:bg-slate-800 text-white text-sm font-medium py-2.5 px-4 rounded-lg shadow-sm transition-all flex justify-center items-center gap-2 mt-2">
-                    <span>Send Login OTP</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                    <span>Login Securely</span> <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
-                <div class="text-center mt-4">
-                    <a href="#" id="toggle-auth" class="text-accent hover:text-blue-700 font-medium transition text-xs">New Customer? Create Account</a>
+                
+                <div id="auth-footer" class="text-center mt-4 fade-in">
+                    <a href="#" onclick="setAuthMode(currentAuthMode === 'login' ? 'signup' : 'login'); return false;" id="toggle-auth" class="text-slate-500 hover:text-slate-800 font-medium transition text-[11px]">New Customer? <span class="text-accent font-semibold">Create Account</span></a>
                 </div>
             </form>
         </div>
@@ -179,7 +214,7 @@
             </div>
         </div>
 
-        <!-- Main Content (Minimalist Layout) -->
+        <!-- Main Content -->
         <main class="flex-1 w-full max-w-md md:max-w-3xl mx-auto p-4 md:p-6 pb-28 md:pb-8">
             
             <div id="link-warning" class="hidden bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-start gap-2.5 shadow-sm mb-5 fade-in">
@@ -231,7 +266,7 @@
                         <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-emerald-100 transition"><i class="fa-solid fa-qrcode"></i></div>
                         <div class="text-left">
                             <p class="font-semibold text-slate-800 text-xs">Submit Claim</p>
-                            <p class="text-[9px] text-slate-400">Offline Pay</p>
+                            <p class="text-[9px] text-slate-400">Pay Now</p>
                         </div>
                     </button>
                 </div>
@@ -264,31 +299,42 @@
             <!-- PAY UDHAR SECTION -->
             <section id="sec-pay" class="hidden space-y-5 fade-in">
                 <div class="bg-white p-5 rounded-xl shadow-soft border border-slate-100">
+                    
                     <div class="text-center mb-6">
-                        <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-lg mx-auto mb-3 border border-emerald-100"><i class="fa-solid fa-check-to-slot"></i></div>
-                        <h3 class="text-sm font-bold text-slate-800">Report Payment</h3>
-                        <p class="text-[10px] text-slate-500 mt-1">Submit cash or UPI payment details.</p>
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-lg mx-auto mb-3 border border-emerald-100"><i class="fa-solid fa-money-bill-wave"></i></div>
+                        <h3 class="text-sm font-bold text-slate-800">Clear Your Dues</h3>
+                        <p class="text-[10px] text-slate-500 mt-1">Select your preferred payment method.</p>
+                    </div>
+
+                    <!-- Payment Method Toggle -->
+                    <div class="flex rounded-xl overflow-hidden border border-slate-200 mb-5 bg-slate-50 p-1 gap-1">
+                        <button type="button" id="tab-pay-online" onclick="setPayMethod('ONLINE')" class="flex-1 py-2.5 text-xs text-center font-bold bg-white text-emerald-600 rounded-lg shadow-sm border border-slate-200 transition">Online Payment</button>
+                        <button type="button" id="tab-pay-cash" onclick="setPayMethod('CASH')" class="flex-1 py-2.5 text-xs text-center font-semibold text-slate-500 hover:text-emerald-600 rounded-lg transition border border-transparent">Cash at Store</button>
                     </div>
                     
                     <form id="payment-request-form" class="space-y-4">
+                        <input type="hidden" id="selected-pay-method" value="ONLINE">
+
+                        <!-- QR Container -->
+                        <div id="qr-container" class="text-center mb-4 p-4 border border-slate-200 rounded-xl bg-slate-50">
+                            <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2"><i class="fa-solid fa-qrcode text-emerald-500 mr-1"></i> Scan QR to Pay</p>
+                            <img id="shop-qr-image" src="" alt="Shop QR Code" class="mx-auto max-w-[200px] rounded-lg shadow-sm hidden">
+                            <p id="qr-loading-text" class="text-xs text-slate-400 mt-2">Fetching QR Code...</p>
+                        </div>
+
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Amount Paid (₹)</label>
                             <input type="number" id="pay-amount" required min="1" step="1" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 font-semibold text-sm text-slate-800 transition outline-none">
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Payment Method</label>
-                            <select id="pay-method" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium text-slate-700 transition outline-none">
-                                <option value="UPI">UPI (GPay / PhonePe)</option>
-                                <option value="Cash">Cash at Store</option>
-                                <option value="Bank Transfer">Bank Transfer</option>
-                            </select>
+                        
+                        <!-- UTR Number Container -->
+                        <div id="utr-container">
+                            <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">UTR / Reference Number</label>
+                            <input type="text" id="pay-ref" placeholder="E.g. 12-digit UPI UTR" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition outline-none text-xs" required>
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Reference (Optional)</label>
-                            <input type="text" id="pay-ref" placeholder="E.g., UTR 123..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition outline-none text-xs">
-                        </div>
-                        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium py-2.5 px-4 rounded-lg shadow-sm transition-all mt-2">
-                            Submit for Approval
+
+                        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium py-2.5 px-4 rounded-lg shadow-sm transition-all mt-2 flex items-center justify-center gap-2">
+                            <span>Submit Request</span> <i class="fa-regular fa-paper-plane text-xs"></i>
                         </button>
                     </form>
                 </div>
@@ -297,9 +343,7 @@
             <!-- PROFILE SECTION (Fixed layout) -->
             <section id="sec-profile" class="hidden space-y-4 fade-in">
                 <div class="bg-white rounded-xl shadow-soft border border-slate-100 overflow-hidden">
-                    <!-- Cover Photo Area -->
                     <div class="h-24 bg-gradient-to-r from-primary to-primaryLight w-full relative">
-                        <!-- Avatar Fixed Positioning -->
                         <div class="absolute -bottom-10 left-5 p-1 bg-white rounded-full shadow-sm">
                             <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center text-2xl border border-slate-200">
                                 <i class="fa-solid fa-user"></i>
@@ -313,7 +357,6 @@
                             <p class="text-xs text-slate-500 mt-0.5" id="profile-email">Loading...</p>
                         </div>
                         
-                        <!-- Info List -->
                         <div class="bg-slate-50 rounded-lg border border-slate-100 p-3 flex items-center gap-3 mb-5">
                             <div class="w-8 h-8 bg-white rounded-md flex items-center justify-center text-slate-400 shadow-sm border border-slate-100">
                                 <i class="fa-solid fa-phone text-xs"></i>
@@ -351,127 +394,140 @@
     </div>
 
     <script>
-        let isSignUp = false;
-        let otpSent = false;
-        let currentAuthEmail = "";
+        let currentAuthMode = 'login';
+        let resetEmail = "";
         let notifInterval = null;
 
-        // UI UTILITIES
         function showToast(msg, type='success') {
             const toast = document.createElement('div');
             const icon = type === 'success' ? 'fa-check-circle text-emerald-500' : 'fa-circle-exclamation text-rose-500';
             const bg = type === 'success' ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200';
             const text = type === 'success' ? 'text-emerald-800' : 'text-rose-800';
             
-            toast.className = `px-4 py-3 rounded-lg shadow-float border ${bg} ${text} font-medium text-xs flex items-center gap-2 fade-in z-50`;
+            toast.className = `px-4 py-3 rounded-lg shadow-float border ${bg} ${text} font-medium text-xs flex items-center gap-2 fade-in z-[9999]`;
             toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${msg}</span>`;
             document.getElementById('toast-container').appendChild(toast);
-            
-            setTimeout(() => { 
-                toast.classList.add('opacity-0', 'translate-x-full', 'duration-300'); 
-                setTimeout(() => toast.remove(), 300); 
-            }, 3000);
+            setTimeout(() => { toast.classList.add('opacity-0', 'translate-x-full', 'duration-300'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        document.getElementById('toggle-auth').addEventListener('click', (e) => {
-            e.preventDefault();
-            if(otpSent) return; // Prevent toggle if OTP is already sent
-            
-            isSignUp = !isSignUp;
-            document.getElementById('name-field').classList.toggle('hidden', !isSignUp);
-            const btn = document.getElementById('auth-btn');
-            btn.innerHTML = isSignUp ? '<span>Send Signup OTP</span> <i class="fa-solid fa-envelope-open-text text-xs"></i>' : '<span>Send Login OTP</span> <i class="fa-solid fa-arrow-right text-xs"></i>';
-            e.target.innerText = isSignUp ? 'Already have an account? Login' : 'New Customer? Create Account';
-        });
+        function togglePassword(id) {
+            const el = document.getElementById(id);
+            const icon = el.nextElementSibling.querySelector('i');
+            if (el.type === 'password') { el.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); } 
+            else { el.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+        }
 
-        // OTP AUTHENTICATION LOGIC
+        function showAuthError(msg) {
+            const errEl = document.getElementById('auth-error');
+            if (!msg) { errEl.classList.add('hidden'); return; }
+            errEl.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1"></i> ${msg}`;
+            errEl.classList.remove('hidden');
+        }
+
+        function setAuthMode(mode) {
+            currentAuthMode = mode;
+            showAuthError(''); 
+            const fName = document.getElementById('field-name'); const fEmail = document.getElementById('field-email');
+            const fPass = document.getElementById('field-password'); const fConf = document.getElementById('field-confirm-password');
+            const fOtp = document.getElementById('field-otp'); const fLink = document.getElementById('forgot-pass-link');
+            const footer = document.getElementById('auth-footer'); const btn = document.getElementById('auth-btn');
+            const toggleText = document.getElementById('toggle-auth'); const passLabel = document.getElementById('lbl-password');
+            
+            [fName, fEmail, fPass, fConf, fOtp, fLink, footer].forEach(el => el.classList.add('hidden'));
+            const emailInput = document.getElementById('auth-email'); const passInput = document.getElementById('auth-password'); const confInput = document.getElementById('auth-confirm-password');
+            emailInput.required = false; passInput.required = false; confInput.required = false; passLabel.innerText = "Password";
+
+            if (mode === 'login') {
+                fEmail.classList.remove('hidden'); emailInput.required = true;
+                fPass.classList.remove('hidden'); passInput.required = true;
+                fLink.classList.remove('hidden'); footer.classList.remove('hidden');
+                btn.innerHTML = '<span>Login Securely</span> <i class="fa-solid fa-arrow-right text-xs"></i>';
+                toggleText.innerHTML = 'New Customer? <span class="text-accent font-semibold">Create Account</span>';
+            } else if (mode === 'signup') {
+                fName.classList.remove('hidden'); fEmail.classList.remove('hidden'); emailInput.required = true;
+                fPass.classList.remove('hidden'); passInput.required = true; passLabel.innerText = "Create Password";
+                fConf.classList.remove('hidden'); confInput.required = true; footer.classList.remove('hidden');
+                btn.innerHTML = '<span>Create Account</span> <i class="fa-solid fa-user-plus text-xs"></i>';
+                toggleText.innerHTML = 'Already have an account? <span class="text-accent font-semibold">Login Here</span>';
+            } else if (mode === 'forgot_email') {
+                fEmail.classList.remove('hidden'); emailInput.required = true; footer.classList.remove('hidden');
+                btn.innerHTML = '<span>Send Recovery OTP</span> <i class="fa-solid fa-envelope text-xs"></i>';
+                toggleText.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back to Login';
+            } else if (mode === 'forgot_otp') {
+                fOtp.classList.remove('hidden'); footer.classList.remove('hidden');
+                btn.innerHTML = '<span>Verify OTP</span> <i class="fa-solid fa-check text-xs"></i>';
+                toggleText.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Cancel Recovery';
+            } else if (mode === 'forgot_new_pass') {
+                fPass.classList.remove('hidden'); passInput.required = true; passLabel.innerText = "Create New Password";
+                fConf.classList.remove('hidden'); confInput.required = true;
+                btn.innerHTML = '<span>Update Password</span> <i class="fa-solid fa-lock text-xs"></i>';
+            }
+        }
+
+        setAuthMode('login');
+
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            showAuthError('');
             const btn = document.getElementById('auth-btn');
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<div class="loader border-slate-400 border-t-white mx-auto"></div>';
             
             try {
-                if (!otpSent) {
-                    // STEP 1: SEND OTP
-                    const email = document.getElementById('auth-email').value;
-                    let options = {};
-                    
-                    if (isSignUp) {
-                        const name = document.getElementById('auth-name').value;
-                        const phone = document.getElementById('auth-phone').value;
-                        if(!name || !phone) throw new Error("Please enter Name and Mobile number.");
-                        options = { data: { full_name: name, phone: phone } };
-                    }
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                const confirm = document.getElementById('auth-confirm-password').value;
 
-                    const { error } = await supabaseClient.auth.signInWithOtp({ 
-                        email: email, 
-                        options: options 
-                    });
-                    
+                if (currentAuthMode === 'signup') {
+                    if (password !== confirm) throw new Error("Passwords do not match.");
+                    if (password.length < 6) throw new Error("Password must be at least 6 characters.");
+                    const name = document.getElementById('auth-name').value;
+                    const phone = document.getElementById('auth-phone').value;
+                    if(!name || !phone) throw new Error("Name and Mobile number are required.");
+
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name, phone: phone } } });
                     if (error) throw error;
-
-                    otpSent = true;
-                    currentAuthEmail = email;
                     
-                    // Update UI to show OTP input
-                    document.getElementById('email-group').classList.add('hidden');
-                    document.getElementById('name-field').classList.add('hidden');
-                    document.getElementById('toggle-auth').classList.add('hidden');
-                    document.getElementById('otp-group').classList.remove('hidden');
+                    if (data.user) {
+                        const { data: biz } = await supabaseClient.from('businesses').select('id').limit(1).single();
+                        if(biz) { await supabaseClient.from('customers').insert([{ business_id: biz.id, profile_id: data.user.id, full_name: name, phone: phone }]); }
+                    }
+                    showToast('Account successfully created!'); checkAuth();
                     
-                    btn.innerHTML = '<span>Verify OTP & Login</span> <i class="fa-solid fa-check text-xs"></i>';
-                    showToast('OTP sent securely to your email.');
-                } else {
-                    // STEP 2: VERIFY OTP
+                } else if (currentAuthMode === 'login') {
+                    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) throw new Error("Invalid Email or Password.");
+                    showToast('Login successful!'); checkAuth();
+                    
+                } else if (currentAuthMode === 'forgot_email') {
+                    const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+                    if (error) throw error;
+                    resetEmail = email; showToast('A 6-digit OTP has been sent to your email.'); setAuthMode('forgot_otp');
+                    
+                } else if (currentAuthMode === 'forgot_otp') {
                     const otp = document.getElementById('auth-otp').value;
                     if(!otp || otp.length !== 6) throw new Error("Please enter a valid 6-digit OTP.");
-
-                    const { data: { session, user }, error } = await supabaseClient.auth.verifyOtp({
-                        email: currentAuthEmail,
-                        token: otp,
-                        type: 'email'
-                    });
+                    const { error } = await supabaseClient.auth.verifyOtp({ email: resetEmail, token: otp, type: 'recovery' });
+                    if (error) throw new Error("Invalid or Expired OTP.");
+                    showToast('OTP Verified!'); document.getElementById('auth-password').value = ''; document.getElementById('auth-confirm-password').value = ''; setAuthMode('forgot_new_pass');
                     
+                } else if (currentAuthMode === 'forgot_new_pass') {
+                    if (password !== confirm) throw new Error("Both passwords do not match.");
+                    if (password.length < 6) throw new Error("Password must be at least 6 characters.");
+                    const { error } = await supabaseClient.auth.updateUser({ password: password });
                     if (error) throw error;
-
-                    // If signup, create customer profile
-                    if (isSignUp && user) {
-                        const { data: biz } = await supabaseClient.from('businesses').select('id').limit(1).single();
-                        if(biz) {
-                            const { data: existing } = await supabaseClient.from('customers').select('id').eq('profile_id', user.id).single();
-                            if(!existing) {
-                                const name = document.getElementById('auth-name').value;
-                                const phone = document.getElementById('auth-phone').value;
-                                await supabaseClient.from('customers').insert([{
-                                    business_id: biz.id, profile_id: user.id, full_name: name, phone: phone
-                                }]);
-                            }
-                        }
-                    }
-
-                    showToast('Login successful!');
-                    checkAuth();
+                    showToast('Password successfully updated!');
+                    document.getElementById('auth-password').value = ''; document.getElementById('auth-confirm-password').value = ''; setAuthMode('login');
                 }
-            } catch (err) {
-                showToast(err.message, 'error');
-                btn.innerHTML = otpSent ? '<span>Verify OTP & Login</span> <i class="fa-solid fa-check text-xs"></i>' : originalHTML;
-            }
+
+            } catch (err) { showAuthError(err.message); } 
+            finally { if(btn.innerHTML.includes('loader')) btn.innerHTML = originalHTML; }
         });
 
         async function logout() {
             if(notifInterval) clearInterval(notifInterval);
-            await supabaseClient.auth.signOut();
-            // Reset auth state on logout
-            otpSent = false;
-            document.getElementById('otp-group').classList.add('hidden');
-            document.getElementById('email-group').classList.remove('hidden');
-            document.getElementById('toggle-auth').classList.remove('hidden');
-            document.getElementById('auth-btn').innerHTML = '<span>Send Login OTP</span> <i class="fa-solid fa-arrow-right text-xs"></i>';
-            document.getElementById('auth-otp').value = '';
-            document.getElementById('auth-email').value = '';
-            
-            checkAuth();
+            await supabaseClient.auth.signOut(); document.getElementById('auth-form').reset();
+            setAuthMode('login'); checkAuth();
         }
 
         async function checkAuth() {
@@ -481,9 +537,7 @@
                 document.getElementById('auth-view').classList.add('hidden');
                 document.getElementById('app-view').classList.remove('hidden');
                 document.getElementById('header-subtitle').innerText = currentUser.user_metadata.full_name || 'Customer';
-                await fetchDashboardData();
-                startNotificationEngine();
-                
+                await fetchDashboardData(); startNotificationEngine();
                 setTimeout(requestNotificationPermission, 2000);
             } else {
                 currentUser = null;
@@ -497,19 +551,16 @@
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
                     const token = await messaging.getToken({ vapidKey: 'BCXpOKMidZx6q8kNLNO7rDULGSSlxeljqhygX4YoNYOk9vBJeZ3wKcqJREApdbNe7_uuvj2XzdmPbt9tM-XEzfw' });
-                    if (token && customerData) {
-                        await supabaseClient.from('customers').update({ fcm_token: token }).eq('id', customerData.id);
-                    }
+                    if (token && customerData) { await supabaseClient.from('customers').update({ fcm_token: token }).eq('id', customerData.id); }
                 }
             } catch (error) { console.error('Error getting notification token:', error); }
         }
 
         messaging.onMessage((payload) => {
-            showToast(`${payload.notification.title}: ${payload.notification.body}`, 'success');
-            checkUnreadNotifications();
+            showToast(`${payload.notification.title}: ${payload.notification.body}`, 'success'); checkUnreadNotifications();
         });
 
-        // DASHBOARD & DATA
+        // DASHBOARD FETCH & ROBUST QR CODE DISPLAY
         async function fetchDashboardData() {
             try {
                 const { data: customer, error } = await supabaseClient.from('customers').select('*').eq('profile_id', currentUser.id).single();
@@ -524,24 +575,75 @@
                 }
                 customerData = customer;
                 document.getElementById('link-warning').classList.add('hidden');
-                
                 document.getElementById('profile-phone').innerText = customerData.phone || currentUser.user_metadata.phone || 'Not Available';
                 
                 const outBal = Number(customer.outstanding_balance);
                 document.getElementById('stat-outstanding').innerText = outBal.toLocaleString('en-IN');
                 document.getElementById('stat-jama').innerText = Number(customer.total_jama).toLocaleString('en-IN');
                 
+                // Fetch Business QR Code Link with Robust Display Logic
+                const { data: bizData } = await supabaseClient.from('businesses').select('qr_link').eq('id', customer.business_id).single();
+                const qrImg = document.getElementById('shop-qr-image');
+                const qrLoadingText = document.getElementById('qr-loading-text');
+
+                if (bizData && bizData.qr_link) {
+                    let qrUrl = bizData.qr_link.trim();
+                    const driveMatch = qrUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || qrUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || qrUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                    if(driveMatch) {
+                        qrUrl = 'https://lh3.googleusercontent.com/d/' + driveMatch[1];
+                    }
+
+                    qrImg.src = qrUrl;
+                    
+                    qrImg.onload = () => {
+                        qrImg.classList.remove('hidden');
+                        qrLoadingText.classList.add('hidden');
+                    };
+                    
+                    qrImg.onerror = () => {
+                        // Fallback to thumbnail generation if standard drive link fails
+                        if(driveMatch && !qrImg.src.includes('thumbnail')) {
+                            qrImg.src = 'https://drive.google.com/thumbnail?id=' + driveMatch[1] + '&sz=w800';
+                        } else {
+                            qrImg.classList.add('hidden');
+                            qrLoadingText.innerHTML = `<span class="text-rose-500 font-medium text-[11px]">QR Code image failed to load.</span>`;
+                        }
+                    };
+                } else {
+                    qrLoadingText.innerText = "QR Code not set by Admin.";
+                }
+
                 fetchTransactions('ALL', 5, 'recent-transactions');
             } catch (err) { console.error("Dashboard error:", err); }
         }
 
         function generateTransactionHTML(tx) {
+            // Render pending payment requests differently to show them in history
+            if (tx.recordType === 'PENDING') {
+                const dateStr = new Date(tx.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
+                const timeStr = new Date(tx.created_at).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+                return `
+                    <div class="p-3 flex justify-between items-center bg-white hover:bg-slate-50 transition cursor-default opacity-80 border-l-2 border-amber-400">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-50 text-amber-500 border border-amber-100">
+                                <i class="fa-solid fa-clock text-[10px]"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-800 text-xs">Payment Request</p>
+                                <p class="text-[9px] text-slate-400 mt-0.5 font-medium">${dateStr} • ${timeStr}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-sm text-amber-600">₹${Number(tx.amount).toLocaleString('en-IN')}</p>
+                            <p class="text-[9px] text-amber-500 mt-0.5 capitalize truncate max-w-[80px]">Pending Approval</p>
+                        </div>
+                    </div>
+                `;
+            }
+
             const isJama = tx.transaction_type === 'JAMA';
-            const icon = isJama ? 'fa-arrow-down' : 'fa-arrow-up';
-            const color = isJama ? 'emerald' : 'rose';
-            const sign = isJama ? '-' : '+';
-            const title = isJama ? 'Payment Received' : 'Udhar / Credit';
-            
+            const icon = isJama ? 'fa-arrow-down' : 'fa-arrow-up'; const color = isJama ? 'emerald' : 'rose';
+            const sign = isJama ? '-' : '+'; const title = isJama ? 'Payment Received' : 'Udhar / Credit';
             const dateStr = new Date(tx.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
             const timeStr = new Date(tx.created_at).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
 
@@ -558,7 +660,7 @@
                     </div>
                     <div class="text-right">
                         <p class="font-bold text-sm text-${color}-600">${sign}₹${Number(tx.amount).toLocaleString('en-IN')}</p>
-                        <p class="text-[9px] text-slate-500 mt-0.5 capitalize truncate max-w-[80px]">${tx.description}</p>
+                        <p class="text-[9px] text-slate-500 mt-0.5 capitalize truncate max-w-[80px]">${tx.description || ''}</p>
                     </div>
                 </div>
             `;
@@ -572,55 +674,81 @@
             if(containerId === 'full-transactions-list') {
                 ['all', 'udhar', 'jama'].forEach(f => {
                     const btn = document.getElementById(`btn-flt-${f}`);
-                    if(btn) {
-                        btn.className = f.toUpperCase() === filter 
-                            ? "flex-1 py-2 px-3 rounded-lg text-xs font-medium bg-primary text-white shadow-sm transition" 
-                            : "flex-1 py-2 px-3 rounded-lg text-xs font-medium bg-transparent text-slate-500 hover:bg-slate-50 transition border border-slate-100";
-                    }
+                    if(btn) { btn.className = f.toUpperCase() === filter ? "flex-1 py-2 px-3 rounded-lg text-xs font-medium bg-primary text-white shadow-sm transition" : "flex-1 py-2 px-3 rounded-lg text-xs font-medium bg-transparent text-slate-500 hover:bg-slate-50 transition border border-slate-100"; }
                 });
             }
             
             let query = supabaseClient.from('ledger_transactions').select('*').eq('customer_id', customerData.id).order('created_at', { ascending: false }).limit(limit);
-            if (filter !== 'ALL') query = query.eq('transaction_type', filter);
+            let prQuery = supabaseClient.from('payment_requests').select('*').eq('customer_id', customerData.id).order('created_at', { ascending: false }).limit(limit);
             
-            const { data, error } = await query;
-            if (error) { container.innerHTML = `<p class="text-rose-500 text-xs p-3">${error.message}</p>`; return; }
+            if (filter === 'UDHAR') query = query.eq('transaction_type', 'UDHAR');
+            if (filter === 'JAMA') query = query.eq('transaction_type', 'JAMA');
+
+            const [txRes, prRes] = await Promise.all([query, prQuery]);
             
-            if (data.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center flex flex-col items-center"><div class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center mb-2"><i class="fa-solid fa-receipt text-slate-300 text-sm"></i></div><p class="text-slate-400 font-medium text-xs">No records found.</p></div>`;
-                return;
+            let allRecords = [];
+            if (!txRes.error && txRes.data) allRecords = [...allRecords, ...txRes.data.map(t => ({...t, recordType: 'LEDGER'}))];
+            
+            // Bring pending payment requests into history view if filter is ALL or JAMA
+            if (filter !== 'UDHAR' && !prRes.error && prRes.data) {
+                allRecords = [...allRecords, ...prRes.data.filter(p => p.status !== 'APPROVED' && p.status !== 'REJECTED').map(p => ({...p, recordType: 'PENDING'}))];
             }
-            container.innerHTML = data.map(tx => generateTransactionHTML(tx)).join('');
+            
+            if (txRes.error) { container.innerHTML = `<p class="text-rose-500 text-xs p-3">${txRes.error.message}</p>`; return; }
+            
+            if (allRecords.length === 0) { 
+                container.innerHTML = `<div class="p-8 text-center flex flex-col items-center"><div class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center mb-2"><i class="fa-solid fa-receipt text-slate-300 text-sm"></i></div><p class="text-slate-400 font-medium text-xs">No records found.</p></div>`; 
+                return; 
+            }
+            
+            allRecords.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            container.innerHTML = allRecords.map(tx => generateTransactionHTML(tx)).join('');
         }
 
-        // NAVIGATION
         function nav(section) {
             document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
             document.getElementById(`sec-${section}`).classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('active', 'text-primary');
-                el.classList.add('text-slate-400');
-            });
+            document.querySelectorAll('.nav-item').forEach(el => { el.classList.remove('active', 'text-primary'); el.classList.add('text-slate-400'); });
             const activeBtn = document.getElementById(`nav-btn-${section}`);
-            if(activeBtn) {
-                activeBtn.classList.add('active');
-                activeBtn.classList.remove('text-slate-400');
-            }
+            if(activeBtn) { activeBtn.classList.add('active'); activeBtn.classList.remove('text-slate-400'); }
             if(section === 'transactions') fetchTransactions('ALL');
             if(section === 'dashboard') fetchDashboardData();
         }
 
-        // PAYMENT REQUEST
+        // TOGGLE PAYMENT METHOD TABS
+        function setPayMethod(method) {
+            document.getElementById('selected-pay-method').value = method;
+            const btnO = document.getElementById('tab-pay-online');
+            const btnC = document.getElementById('tab-pay-cash');
+            const qrCont = document.getElementById('qr-container');
+            const utrCont = document.getElementById('utr-container');
+            const refInput = document.getElementById('pay-ref');
+
+            if(method === 'ONLINE') {
+                btnO.className = "flex-1 py-2.5 text-xs text-center font-bold bg-white text-emerald-600 rounded-lg shadow-sm border border-slate-200 transition";
+                btnC.className = "flex-1 py-2.5 text-xs text-center font-semibold text-slate-500 hover:text-emerald-600 rounded-lg transition border border-transparent";
+                qrCont.classList.remove('hidden'); utrCont.classList.remove('hidden');
+                refInput.required = true;
+            } else {
+                btnC.className = "flex-1 py-2.5 text-xs text-center font-bold bg-white text-emerald-600 rounded-lg shadow-sm border border-slate-200 transition";
+                btnO.className = "flex-1 py-2.5 text-xs text-center font-semibold text-slate-500 hover:text-emerald-600 rounded-lg transition border border-transparent";
+                qrCont.classList.add('hidden'); utrCont.classList.add('hidden');
+                refInput.required = false;
+            }
+        }
+
+        // PAYMENT REQUEST SUBMIT
         document.getElementById('payment-request-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(!customerData) return showToast("Account not linked by admin.", "error");
             
             const amount = document.getElementById('pay-amount').value;
-            const method = document.getElementById('pay-method').value;
-            const ref = document.getElementById('pay-ref').value;
+            const methodCode = document.getElementById('selected-pay-method').value;
+            const method = methodCode === 'ONLINE' ? 'Online Payment' : 'Cash at Store';
+            const ref = methodCode === 'ONLINE' ? document.getElementById('pay-ref').value : 'Cash';
+            
             const btn = e.target.querySelector('button');
-            const originalText = btn.innerText;
+            const originalText = btn.innerHTML;
             btn.disabled = true; btn.innerHTML = '<div class="loader mx-auto border-t-white border-white/30"></div>';
 
             const { error } = await supabaseClient.from('payment_requests').insert([{
@@ -629,40 +757,27 @@
 
             if (error) { showToast(error.message, 'error'); } 
             else { 
-                showToast('Claim submitted! Waiting for Admin approval.', 'success'); 
-                e.target.reset(); nav('dashboard'); 
+                showToast('Request submitted! Waiting for Admin approval.', 'success'); 
+                e.target.reset(); setPayMethod('ONLINE'); nav('dashboard'); 
             }
-            btn.disabled = false; btn.innerText = originalText;
+            btn.disabled = false; btn.innerHTML = originalText;
         });
 
         // NOTIFICATION ENGINE
         function toggleNotifications() {
-            const panel = document.getElementById('notification-panel');
-            const slide = document.getElementById('notif-slide');
-            
+            const panel = document.getElementById('notification-panel'); const slide = document.getElementById('notif-slide');
             if (panel.classList.contains('hidden')) {
-                panel.classList.remove('hidden');
-                setTimeout(() => slide.classList.remove('translate-x-full'), 10);
-                fetchNotifications();
+                panel.classList.remove('hidden'); setTimeout(() => slide.classList.remove('translate-x-full'), 10); fetchNotifications();
             } else {
-                slide.classList.add('translate-x-full');
-                setTimeout(() => panel.classList.add('hidden'), 300);
+                slide.classList.add('translate-x-full'); setTimeout(() => panel.classList.add('hidden'), 300);
             }
         }
 
-        function startNotificationEngine() {
-            checkUnreadNotifications();
-            notifInterval = setInterval(checkUnreadNotifications, 15000);
-        }
+        function startNotificationEngine() { checkUnreadNotifications(); notifInterval = setInterval(checkUnreadNotifications, 15000); }
 
         async function checkUnreadNotifications() {
             if(!customerData) return;
-            const { count, error } = await supabaseClient
-                .from('notifications')
-                .select('*', { count: 'exact', head: true })
-                .eq('is_read', false)
-                .or(`customer_id.eq.${customerData.id},customer_id.is.null`);
-            
+            const { count, error } = await supabaseClient.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', false).or(`customer_id.eq.${customerData.id},customer_id.is.null`);
             const badge = document.getElementById('notif-badge');
             if(count > 0) badge.classList.remove('hidden'); else badge.classList.add('hidden');
         }
@@ -671,19 +786,9 @@
             if(!customerData) return;
             const list = document.getElementById('notif-list');
             list.innerHTML = '<div class="text-center py-8"><div class="loader mx-auto border-slate-300 border-t-primary"></div></div>';
-
-            const { data, error } = await supabaseClient
-                .from('notifications')
-                .select('*')
-                .or(`customer_id.eq.${customerData.id},customer_id.is.null`)
-                .order('created_at', { ascending: false })
-                .limit(30);
-
+            const { data, error } = await supabaseClient.from('notifications').select('*').or(`customer_id.eq.${customerData.id},customer_id.is.null`).order('created_at', { ascending: false }).limit(30);
             if (error) { list.innerHTML = `<p class="text-rose-500 p-3 text-center text-xs">${error.message}</p>`; return; }
-            if (data.length === 0) {
-                list.innerHTML = `<div class="text-center py-10"><div class="w-10 h-10 bg-slate-50 rounded-full flex justify-center items-center mx-auto mb-2"><i class="fa-regular fa-bell-slash text-sm text-slate-300"></i></div><p class="text-slate-400 text-xs font-medium">All caught up!</p></div>`;
-                return;
-            }
+            if (data.length === 0) { list.innerHTML = `<div class="text-center py-10"><div class="w-10 h-10 bg-slate-50 rounded-full flex justify-center items-center mx-auto mb-2"><i class="fa-regular fa-bell-slash text-sm text-slate-300"></i></div><p class="text-slate-400 text-xs font-medium">All caught up!</p></div>`; return; }
 
             list.innerHTML = data.map(n => {
                 let iconStr, colorClass, bgClass;
@@ -691,7 +796,6 @@
                 else if(n.notification_type === 'jama') { iconStr = 'fa-arrow-down'; colorClass = 'text-emerald-500'; bgClass = 'bg-emerald-50 border-emerald-100'; }
                 else if(n.notification_type === 'alert') { iconStr = 'fa-bolt'; colorClass = 'text-amber-500'; bgClass = 'bg-amber-50 border-amber-100'; }
                 else { iconStr = 'fa-bell'; colorClass = 'text-accent'; bgClass = 'bg-blue-50 border-blue-100'; }
-
                 return `
                     <div class="mb-2 p-3 rounded-xl border ${n.is_read ? 'bg-white border-slate-100' : bgClass} transition relative">
                         ${!n.is_read ? `<div class="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-accent"></div>` : ''}
@@ -703,8 +807,7 @@
                                 <p class="text-[8px] font-medium text-slate-400 mt-1.5 uppercase tracking-wider">${new Date(n.created_at).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</p>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
             markAllNotificationsRead(true);
         }
@@ -720,4 +823,4 @@
         checkAuth();
     </script>
 </body>
-</html>
+                    </html>
