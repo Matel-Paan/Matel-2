@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matel Paan | Smart Digital Khata Book</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: { 
+                extend: { 
+                    colors: { 
+                        primary: '#0f172a', 
+                        primaryLight: '#334155',
+                        accent: '#3b82f6', 
+                        surface: '#f8fafc',
+                        textMain: '#334155',
+                        textMuted: '#64748b'
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    boxShadow: { 
+                        'soft': '0 4px 20px -2px rgba(0,0,0,0.04)',
+                        'float': '0 10px 40px -10px rgba(0,0,0,0.08)'
+                    }
+                } 
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #334155; overflow-x: hidden; }
+        
+        /* Light Glassmorphism */
+        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        
+        .fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(15px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Hide scrollbar for mockup lists */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+    </style>
+</head>
+<body class="antialiased selection:bg-accent selection:text-white">
+
+    <!-- Ambient Background Elements -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-100/50 rounded-full mix-blend-multiply filter blur-[80px]"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-slate-200/50 rounded-full mix-blend-multiply filter blur-[100px]"></div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="glass-header fixed w-full top-0 z-50 transition-all">
+        <div class="max-w-6xl mx-auto px-5 py-3.5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-primary text-white rounded-lg flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-leaf text-sm"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold text-primary tracking-tight">Matel Paan</h1>
+                    <p class="text-[9px] font-semibold text-accent uppercase tracking-wider">Digital Ledger</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex gap-7 text-xs font-medium text-textMuted">
+                <a href="#features" class="hover:text-primary transition">Features</a>
+                <a href="#about" class="hover:text-primary transition">About</a>
+                <a href="#faq" class="hover:text-primary transition">FAQ</a>
+                <a href="#contact" class="hover:text-primary transition">Contact</a>
+            </nav>
+            <a href="matel-paan.apk" download class="bg-accent hover:bg-blue-600 text-white text-[11px] font-semibold py-2 px-4 rounded-lg shadow-sm transition-all flex items-center gap-2">
+                <i class="fa-solid fa-download"></i> Get App
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-28 pb-16 px-5 max-w-6xl mx-auto min-h-[85vh] flex flex-col md:flex-row items-center justify-between gap-10 relative">
+        <div class="flex-1 space-y-5 fade-up z-10">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-accent text-[10px] font-bold uppercase tracking-widest">
+                <i class="fa-solid fa-award"></i> 9 Years of Excellence
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight text-primary tracking-tight">
+                Smart Digital Khata Book<br/> 
+                <span class="text-accent">For Your Needs.</span>
+            </h1>
+            
+            <p class="text-textMuted text-sm md:text-base max-w-md leading-relaxed font-light">
+                Experience the official Matel Paan application. Manage your accounts, make secure payments, and receive real-time updates directly on your smartphone.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-3 pt-3">
+                <a href="matel-paan.apk" download class="bg-primary hover:bg-slate-800 text-white font-medium py-3 px-6 rounded-xl shadow-float transition-all flex items-center justify-center gap-2.5 text-sm group">
+                    <i class="fa-brands fa-android text-lg group-hover:-translate-y-0.5 transition-transform"></i> Download App
+                </a>
+                <a href="#features" class="bg-white hover:bg-slate-50 border border-slate-200 text-textMain font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 text-sm shadow-sm">
+                    Explore Features <i class="fa-solid fa-arrow-down text-xs text-textMuted"></i>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-5 pt-4 text-[11px] text-textMuted font-medium">
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-shield-check text-emerald-500"></i> 100% Secure</div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-amber-500"></i> Quick OTP Login</div>
+            </div>
+        </div>
+        
+        <!-- Animated Carousel Mockup -->
+        <div class="flex-1 w-full max-w-[320px] relative fade-up mx-auto z-10" style="animation-delay: 0.15s;">
+            <div class="absolute inset-0 bg-blue-100/60 rounded-[3rem] blur-2xl transform rotate-3"></div>
+            
+            <!-- Phone Frame -->
+            <div class="relative bg-white border-[6px] border-slate-100 rounded-[2.5rem] shadow-float overflow-hidden h-[580px] group">
+                
+                <!-- Mockup Status Bar -->
+                <div class="absolute top-0 w-full h-6 bg-white/90 backdrop-blur z-20 flex justify-between items-center px-4">
+                    <span class="text-[9px] font-medium text-slate-800">9:41</span>
+                    <div class="flex gap-1 items-center text-[8px] text-slate-800">
+                        <i class="fa-solid fa-signal"></i>
+                        <i class="fa-solid fa-wifi"></i>
+                        <i class="fa-solid fa-battery-full text-[10px]"></i>
+                    </div>
+                </div>
+
+                <!-- Carousel Track (Holds 4 screens, 400% width) -->
+                <div id="mockup-track" class="flex w-[400%] h-full transition-transform duration-500 ease-in-out pt-6">
+                    
+                    <!-- 1. Dashboard Screen -->
+                    <div class="w-1/4 h-full flex flex-col bg-slate-50 relative">
+                        <div class="p-4 bg-white border-b border-slate-100 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 bg-primary rounded-md flex justify-center items-center"><i class="fa-solid fa-wallet text-white text-[10px]"></i></div>
+                                <span class="font-bold text-xs text-primary">Digital Khata</span>
+                            </div>
+                            <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200"><i class="fa-regular fa-bell text-[10px] text-textMuted"></i></div>
+                        </div>
+                        <div class="p-4 flex-1 space-y-4">
+                            <div class="bg-primary rounded-xl p-4 shadow-soft text-white relative overflow-hidden">
+                                <p class="text-[9px] text-slate-400 uppercase tracking-wider">Total Outstanding</p>
+                                <h2 class="text-2xl font-bold mt-0.5 tracking-tight">₹ 1,250</h2>
+                                <div class="mt-4 pt-3 border-t border-slate-700/50 flex justify-between items-center">
+                                    <div><p class="text-[8px] text-slate-400 uppercase">Total Paid</p><p class="text-[11px] font-bold text-emerald-400">₹ 4,000</p></div>
+                                    <button class="bg-accent text-white text-[9px] font-medium py-1 px-3 rounded shadow-sm">Pay Now</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-white p-2.5 rounded-lg border border-slate-100 flex items-center gap-2"><div class="w-6 h-6 bg-slate-50 text-textMuted rounded flex items-center justify-center"><i class="fa-solid fa-file-invoice text-[9px]"></i></div><div><p class="text-[10px] font-bold text-primary">Passbook</p><p class="text-[8px] text-slate-400">History</p></div></div>
+                                <div class="bg-white p-2.5 rounded-lg border border-slate-100 flex items-center gap-2"><div class="w-6 h-6 bg-emerald-50 text-emerald-600 rounded flex items-center justify-center"><i class="fa-solid fa-qrcode text-[9px]"></i></div><div><p class="text-[10px] font-bold text-primary">Pay Due</p><p class="text-[8px] text-slate-400">Submit</p></div></div>
+                            </div>
+                            <div>
+                                <p class="text-[9px] text-textMuted uppercase font-semibold tracking-wider mb-2 px-1">Recent</p>
+                                <div class="bg-white rounded-lg border border-slate-100 divide-y divide-slate-50">
+                                    <div class="p-2 flex justify-between items-center"><div class="flex gap-2"><div class="w-6 h-6 bg-rose-50 text-rose-500 rounded flex justify-center items-center"><i class="fa-solid fa-arrow-up text-[9px]"></i></div><div><p class="text-[9px] font-bold text-primary">Credit Added</p><p class="text-[8px] text-slate-400">Today</p></div></div><span class="text-[10px] font-bold text-rose-600">+₹ 150</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Passbook/History Screen -->
+                    <div class="w-1/4 h-full flex flex-col bg-slate-50 relative">
+                        <div class="p-4 bg-white border-b border-slate-100 text-center relative">
+                            <span class="font-bold text-xs text-primary">Passbook</span>
+                        </div>
+                        <div class="p-3">
+                            <div class="flex gap-1 bg-white p-1 rounded-lg border border-slate-100 mb-3">
+                                <div class="flex-1 py-1.5 bg-primary rounded text-white text-[9px] font-medium text-center">All</div>
+                                <div class="flex-1 py-1.5 text-slate-500 text-[9px] font-medium text-center">Udhar</div>
+                                <div class="flex-1 py-1.5 text-slate-500 text-[9px] font-medium text-center">Jama</div>
+                            </div>
+                            <div class="bg-white rounded-lg border border-slate-100 divide-y divide-slate-50 overflow-hidden">
+                                <div class="p-2.5 flex justify-between items-center"><div class="flex gap-2"><div class="w-7 h-7 bg-rose-50 text-rose-500 rounded flex justify-center items-center"><i class="fa-solid fa-arrow-up text-[10px]"></i></div><div><p class="text-[10px] font-bold text-primary">Credit / Udhar</p><p class="text-[8px] text-slate-400">12 Oct • 14:30</p></div></div><span class="text-[11px] font-bold text-rose-600">+₹ 150</span></div>
+                                <div class="p-2.5 flex justify-between items-center"><div class="flex gap-2"><div class="w-7 h-7 bg-emerald-50 text-emerald-500 rounded flex justify-center items-center"><i class="fa-solid fa-arrow-down text-[10px]"></i></div><div><p class="text-[10px] font-bold text-primary">Payment Received</p><p class="text-[8px] text-slate-400">10 Oct • 09:15</p></div></div><span class="text-[11px] font-bold text-emerald-600">-₹ 500</span></div>
+                                <div class="p-2.5 flex justify-between items-center"><div class="flex gap-2"><div class="w-7 h-7 bg-rose-50 text-rose-500 rounded flex justify-center items-center"><i class="fa-solid fa-arrow-up text-[10px]"></i></div><div><p class="text-[10px] font-bold text-primary">Credit / Udhar</p><p class="text-[8px] text-slate-400">08 Oct • 18:45</p></div></div><span class="text-[11px] font-bold text-rose-600">+₹ 320</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Pay Screen -->
+                    <div class="w-1/4 h-full flex flex-col bg-slate-50 relative">
+                        <div class="p-4 bg-white border-b border-slate-100 text-center">
+                            <span class="font-bold text-xs text-primary">Clear Dues</span>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <div class="flex gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+                                <div class="flex-1 py-1.5 bg-white text-emerald-600 border border-slate-200 rounded text-[9px] font-bold text-center shadow-sm">Online</div>
+                                <div class="flex-1 py-1.5 text-slate-500 text-[9px] font-medium text-center">Cash</div>
+                            </div>
+                            <div class="bg-white p-4 border border-slate-200 rounded-xl text-center shadow-sm">
+                                <p class="text-[9px] font-bold text-slate-500 uppercase mb-2"><i class="fa-solid fa-qrcode text-emerald-500"></i> Scan to Pay</p>
+                                <div class="w-24 h-24 bg-slate-100 mx-auto rounded-lg border border-slate-200 flex items-center justify-center">
+                                    <i class="fa-solid fa-qrcode text-3xl text-slate-300"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-semibold text-slate-500 uppercase mb-1">Amount (₹)</p>
+                                <div class="bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold text-primary">₹ 1250</div>
+                            </div>
+                            <button class="w-full bg-emerald-500 text-white text-[10px] font-medium py-2.5 rounded-lg shadow-sm mt-2 flex justify-center items-center gap-1.5">
+                                Submit Details <i class="fa-solid fa-paper-plane text-[9px]"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 4. Profile Screen -->
+                    <div class="w-1/4 h-full flex flex-col bg-slate-50 relative">
+                        <div class="h-20 bg-gradient-to-r from-primary to-primaryLight relative w-full">
+                            <div class="absolute -bottom-6 left-4 p-1 bg-slate-50 rounded-full">
+                                <div class="w-12 h-12 bg-white text-slate-400 rounded-full flex items-center justify-center text-xl border border-slate-200 shadow-sm"><i class="fa-solid fa-user"></i></div>
+                            </div>
+                        </div>
+                        <div class="px-4 pt-10 pb-4">
+                            <h3 class="text-sm font-bold text-primary">Rahul Kumar</h3>
+                            <p class="text-[9px] text-slate-500">rahul@example.com</p>
+                            
+                            <div class="bg-white rounded-lg border border-slate-100 p-2.5 flex items-center gap-2 mt-5 shadow-sm">
+                                <div class="w-6 h-6 bg-slate-50 rounded flex items-center justify-center text-textMuted border border-slate-100"><i class="fa-solid fa-phone text-[9px]"></i></div>
+                                <div><p class="text-[8px] text-slate-400 uppercase font-bold">Mobile</p><p class="text-[10px] font-bold text-primary">+91 98765 43210</p></div>
+                            </div>
+
+                            <div class="mt-6 border border-rose-200 bg-white rounded-lg p-2.5 text-center text-rose-500 text-[10px] font-bold flex justify-center items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-power-off"></i> Logout
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mockup Bottom Nav (Static over all screens) -->
+                <div class="absolute bottom-0 w-full bg-white/90 backdrop-blur border-t border-slate-200 p-2 flex justify-around items-center z-20 pb-4">
+                    <div class="flex flex-col items-center text-primary"><i class="fa-solid fa-house text-[11px] mb-0.5"></i><span class="text-[7px] font-bold">Home</span></div>
+                    <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-receipt text-[11px] mb-0.5"></i><span class="text-[7px] font-medium">History</span></div>
+                    <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-qrcode text-[11px] mb-0.5"></i><span class="text-[7px] font-medium">Pay</span></div>
+                    <div class="flex flex-col items-center text-slate-400"><i class="fa-regular fa-user text-[11px] mb-0.5"></i><span class="text-[7px] font-medium">Profile</span></div>
+                </div>
+
+                <!-- Carousel Controls Overlay -->
+                <div class="absolute bottom-[60px] left-0 right-0 flex justify-center gap-1.5 z-30">
+                    <button onclick="goToSlide(0)" class="nav-dot w-3 h-1.5 rounded-full bg-primary transition-all duration-300 shadow"></button>
+                    <button onclick="goToSlide(1)" class="nav-dot w-1.5 h-1.5 rounded-full bg-slate-300 transition-all duration-300 shadow"></button>
+                    <button onclick="goToSlide(2)" class="nav-dot w-1.5 h-1.5 rounded-full bg-slate-300 transition-all duration-300 shadow"></button>
+                    <button onclick="goToSlide(3)" class="nav-dot w-1.5 h-1.5 rounded-full bg-slate-300 transition-all duration-300 shadow"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 px-5 bg-white relative border-y border-slate-100">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12 fade-up">
+                <h2 class="text-2xl md:text-3xl font-bold text-primary mb-3">Intelligent Features, Minimal Design</h2>
+                <p class="text-textMuted text-sm max-w-xl mx-auto font-light">Engineered to save your time and eliminate calculation errors with our seamless digital ecosystem.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:shadow-soft transition-all group fade-up">
+                    <div class="w-12 h-12 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-primary text-lg mb-4 shadow-sm group-hover:bg-primary group-hover:text-white transition-colors"><i class="fa-solid fa-book-open"></i></div>
+                    <h3 class="text-sm font-bold text-primary mb-2">Live Passbook</h3>
+                    <p class="text-textMuted text-xs leading-relaxed font-light">Monitor your credits and debits in real-time. Say goodbye to the hassle of traditional paper diaries.</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:shadow-soft transition-all group fade-up" style="animation-delay: 0.1s;">
+                    <div class="w-12 h-12 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-primary text-lg mb-4 shadow-sm group-hover:bg-primary group-hover:text-white transition-colors"><i class="fa-solid fa-qrcode"></i></div>
+                    <h3 class="text-sm font-bold text-primary mb-2">Secure Online Payments</h3>
+                    <p class="text-textMuted text-xs leading-relaxed font-light">Scan the shop's QR code or use UPI details directly within the app to clear your pending dues from anywhere.</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:shadow-soft transition-all group fade-up" style="animation-delay: 0.2s;">
+                    <div class="w-12 h-12 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-primary text-lg mb-4 shadow-sm group-hover:bg-primary group-hover:text-white transition-colors"><i class="fa-solid fa-bell"></i></div>
+                    <h3 class="text-sm font-bold text-primary mb-2">Instant Notifications</h3>
+                    <p class="text-textMuted text-xs leading-relaxed font-light">Receive immediate push alerts on your device whenever a new transaction is recorded at the store.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 px-5 relative bg-surface">
+        <div class="max-w-6xl mx-auto bg-white border border-slate-100 shadow-soft rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center gap-10">
+            <div class="flex-1 space-y-4">
+                <div class="text-accent font-bold tracking-widest text-[10px] uppercase">About The Business</div>
+                <h2 class="text-2xl md:text-3xl font-bold text-primary">A Legacy of Trust, Now Digitized.</h2>
+                <p class="text-textMuted leading-relaxed text-xs md:text-sm font-light">Operated by Arvind Bhai, Matel Paan has been delivering premium quality and exceptional service for over 9 years. Adapting to the digital age, we have entirely modernized our ledger system to ensure 100% transparency and convenience for our valued customers.</p>
+                <div class="flex flex-wrap gap-6 pt-4 border-t border-slate-100">
+                    <div><p class="text-[9px] text-slate-400 uppercase tracking-wider mb-0.5 font-semibold">Proprietor</p><p class="text-primary text-sm font-bold">Arvind Bhai</p></div>
+                    <div><p class="text-[9px] text-slate-400 uppercase tracking-wider mb-0.5 font-semibold">Business Hours</p><p class="text-accent text-sm font-bold"><i class="fa-regular fa-clock"></i> 7:30 AM - 10:30 PM</p></div>
+                </div>
+            </div>
+            <div class="md:w-1/3 w-full flex justify-center">
+                <div class="w-40 h-40 rounded-full border border-slate-100 bg-slate-50 flex items-center justify-center relative shadow-inner">
+                    <div class="absolute inset-0 rounded-full border-[3px] border-t-accent border-r-transparent border-b-primary border-l-transparent animate-spin opacity-50" style="animation-duration: 4s;"></div>
+                    <i class="fa-solid fa-store text-5xl text-slate-300"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 px-5 bg-white border-t border-slate-100">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-10"><h2 class="text-2xl font-bold text-primary mb-2">Frequently Asked Questions</h2><p class="text-textMuted text-xs font-light">Everything you need to know about the application.</p></div>
+            <div class="space-y-3">
+                <div class="bg-slate-50 rounded-xl border border-slate-100 overflow-hidden">
+                    <button class="faq-btn w-full px-5 py-4 text-left flex justify-between items-center text-primary text-sm font-semibold focus:outline-none transition-colors hover:bg-slate-100" onclick="toggleFaq(this)">How do I download and install the app?<i class="fa-solid fa-plus text-textMuted text-xs transition-transform duration-300"></i></button>
+                    <div class="faq-answer px-5 bg-white"><p class="pb-4 pt-1 text-xs text-textMuted font-light leading-relaxed">Click the 'Download APK' button provided on this page. Once the file is downloaded, tap on it to initiate installation. If prompted by your device, allow installation from 'Unknown Sources' in your security settings.</p></div>
+                </div>
+                <div class="bg-slate-50 rounded-xl border border-slate-100 overflow-hidden">
+                    <button class="faq-btn w-full px-5 py-4 text-left flex justify-between items-center text-primary text-sm font-semibold focus:outline-none transition-colors hover:bg-slate-100" onclick="toggleFaq(this)">Is my personal data and ledger secure?<i class="fa-solid fa-plus text-textMuted text-xs transition-transform duration-300"></i></button>
+                    <div class="faq-answer px-5 bg-white"><p class="pb-4 pt-1 text-xs text-textMuted font-light leading-relaxed">Absolutely. Your data is encrypted and securely stored in cloud databases. Access is strictly restricted via secure OTP authentication, ensuring only you have access to your personal transaction history.</p></div>
+                </div>
+                <div class="bg-slate-50 rounded-xl border border-slate-100 overflow-hidden">
+                    <button class="faq-btn w-full px-5 py-4 text-left flex justify-between items-center text-primary text-sm font-semibold focus:outline-none transition-colors hover:bg-slate-100" onclick="toggleFaq(this)">How can I clear my outstanding balance?<i class="fa-solid fa-plus text-textMuted text-xs transition-transform duration-300"></i></button>
+                    <div class="faq-answer px-5 bg-white"><p class="pb-4 pt-1 text-xs text-textMuted font-light leading-relaxed">Navigate to the 'Pay Now' section within the app. You can scan the shop's integrated QR code to make a payment. Once completed, submit your Reference/UTR number in the app. Your balance will reflect the payment upon admin verification.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="pt-16 pb-8 px-5 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+            <div>
+                <div class="flex items-center gap-2 mb-4"><div class="w-7 h-7 bg-primary text-white rounded flex items-center justify-center shadow-sm"><i class="fa-solid fa-leaf text-[10px]"></i></div><h3 class="text-sm font-bold text-primary">Matel Paan</h3></div>
+                <p class="text-xs text-textMuted leading-relaxed mb-4 max-w-xs font-light">Manage your digital ledger effortlessly. Proudly serving our community for 9 years under the proprietorship of Arvind Bhai.</p>
+                <a href="matel-paan.apk" download class="inline-flex items-center gap-1.5 text-accent font-semibold text-xs hover:text-blue-700 transition"><i class="fa-brands fa-android"></i> Download Application</a>
+            </div>
+            <div>
+                <h4 class="text-primary text-sm font-bold mb-4">Quick Links</h4>
+                <ul class="space-y-2.5 text-xs text-textMuted font-light">
+                    <li><a href="#features" class="hover:text-accent transition">Application Features</a></li>
+                    <li><a href="#faq" class="hover:text-accent transition">Help & Support (FAQ)</a></li>
+                    <li><a href="#" class="hover:text-accent transition">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-primary text-sm font-bold mb-4">Contact Information</h4>
+                <ul class="space-y-3 text-xs text-textMuted font-light">
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-location-dot mt-0.5 text-slate-400"></i><span>Matel Paan Shop, Isckon Circle, Jahangirpura, Surat</span></li>
+                    <li class="flex items-center gap-2.5"><i class="fa-solid fa-clock text-slate-400"></i><span>Operating: 7:30 AM - 10:30 PM</span></li>
+                    <li class="flex items-center gap-2.5"><i class="fa-solid fa-envelope text-slate-400"></i><span>matelpaan@gmail.com</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-6xl mx-auto pt-6 border-t border-slate-200 text-center flex flex-col md:flex-row justify-between items-center gap-3">
+            <p class="text-[10px] text-slate-400 font-medium tracking-wide uppercase">&copy; 2026 Matel Paan. All rights reserved.</p>
+            <p class="text-[10px] text-slate-400 font-medium">Developed with <i class="fa-solid fa-heart text-rose-400 mx-0.5"></i> for our Customers</p>
+        </div>
+    </footer>
+
+    <!-- Scripts: FAQ & Carousel -->
+    <script>
+        // FAQ Logic
+        function toggleFaq(btn) {
+            const answer = btn.nextElementSibling;
+            const icon = btn.querySelector('i');
+            const isOpen = answer.style.maxHeight;
+
+            document.querySelectorAll('.faq-answer').forEach(el => el.style.maxHeight = null);
+            document.querySelectorAll('.faq-btn i').forEach(el => {
+                el.style.transform = 'rotate(0deg)';
+                el.classList.replace('text-accent', 'text-textMuted');
+                el.parentElement.classList.remove('bg-slate-100');
+            });
+
+            if (!isOpen) {
+                answer.style.maxHeight = answer.scrollHeight + "px";
+                icon.style.transform = 'rotate(45deg)';
+                icon.classList.replace('text-textMuted', 'text-accent');
+                btn.classList.add('bg-slate-100');
+            }
+        }
+
+        // Carousel Logic
+        let currentSlide = 0;
+        const track = document.getElementById('mockup-track');
+        const dots = document.querySelectorAll('.nav-dot');
+        const bottomNavIcons = document.querySelectorAll('.absolute.bottom-0 .flex-col');
+        
+        function goToSlide(index) {
+            currentSlide = index;
+            // Slide track horizontally
+            track.style.transform = `translateX(-${index * 25}%)`;
+            
+            // Update dots
+            dots.forEach((dot, i) => {
+                dot.className = i === index 
+                    ? 'nav-dot w-3 h-1.5 rounded-full bg-primary transition-all duration-300 shadow' 
+                    : 'nav-dot w-1.5 h-1.5 rounded-full bg-slate-300 transition-all duration-300 shadow';
+            });
+
+            // Update bottom nav icon active states to match the screen
+            bottomNavIcons.forEach((nav, i) => {
+                if (i === index) {
+                    nav.classList.remove('text-slate-400');
+                    nav.classList.add('text-primary');
+                    nav.querySelector('span').classList.replace('font-medium', 'font-bold');
+                } else {
+                    nav.classList.remove('text-primary');
+                    nav.classList.add('text-slate-400');
+                    nav.querySelector('span').classList.replace('font-bold', 'font-medium');
+                }
+            });
+        }
+
+        // Auto-play interval
+        let carouselInterval = setInterval(() => {
+            let next = (currentSlide + 1) % 4;
+            goToSlide(next);
+        }, 3000);
+
+        // Pause auto-play on hover
+        const mockupContainer = document.querySelector('.group');
+        mockupContainer.addEventListener('mouseenter', () => clearInterval(carouselInterval));
+        mockupContainer.addEventListener('mouseleave', () => {
+            carouselInterval = setInterval(() => {
+                let next = (currentSlide + 1) % 4;
+                goToSlide(next);
+            }, 3000);
+        });
+
+        // Init
+        goToSlide(0);
+    </script>
+</body>
+                                  </html>
